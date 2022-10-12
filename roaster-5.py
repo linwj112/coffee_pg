@@ -1,5 +1,4 @@
 #auto-py-to-exe
-import json
 import minimalmodbus
 import time
 from tkinter import *
@@ -163,12 +162,9 @@ def clean_tree():#清除Tree資料表、資料欄位及相關按鈕復歸
     et_temp_l.config(text='')   #清除環境溫R欄位
     bt_temp_ror_l.config(text='')   #清除豆溫ROR欄位
     bt_temp_l.config(text='')   #清除豆溫欄位        
-    canvas.delete("all")    #清除繪圖畫面
-    canvas_ss.delete("all")    #清除繪圖畫面
 
-    #canvas.create_rectangle(0,0, 900, 420,fill='#000000', stipple="gray50" )#脫水期activefill='lightgreen',activestipple="gray50"
     draw_panal()    #重繪繪圖座標系統
-    draw_panal_ss()    #重繪繪圖座標系統
+    draw_panal_ss(typess_no)    #重繪繪圖座標系統
 
     #將事件按鈕復歸
     Button(frame1,text="開機", style='W.TButton',command=lambda:temp_ror('0')).grid(row=2,column=0,padx=5,pady=5)    
@@ -193,12 +189,24 @@ def clean_tree():#清除Tree資料表、資料欄位及相關按鈕復歸
     sc_E.delete(0,END)
     scend_E.delete(0,END)
     drop_E.delete(0,END)
+    #********************************************************
+    var_rostype = IntVar()
+    var_rostype.set(2)
+    rostype_nd_1 = Radiobutton(frame4,text="北歐烘焙法",variable=var_rostype,value = 1,command=lambda:draw_panal_ss(1))
+    rostype_nd_1.grid(row=0,column=0,columnspan=14,padx=5,pady=5)
+    rostype_sr_2 = Radiobutton(frame4,text="Scott Rao_漸降式烘焙法",variable=var_rostype,value = 2,command=lambda:draw_panal_ss(2))
+    rostype_sr_2.grid(row=0,column=15,columnspan=14,padx=5,pady=5)
+    rostype_sn_3 = Radiobutton(frame4,text="小野善造_完全烘焙法",variable=var_rostype,value = 3,command=lambda:draw_panal_ss(3))
+    rostype_sn_3.grid(row=15,column=0,columnspan=14,padx=5,pady=5)
+    rostype_ss_4 = Radiobutton(frame4,text="全息烘焙法",variable=var_rostype,value = 4,command=lambda:draw_panal_ss(4))
+    rostype_ss_4.grid(row=15,column=15,columnspan=14,padx=5,pady=5)
+
 
     messagebox.showinfo('information', '清除完成')
     return
 
 def draw_panal():#重新產生畫布座標系統
-
+    canvas.delete("all")    #清除繪圖畫面
     #第一座標Y軸
     canvas.create_line(36,0,36,440,width=2,fill='blue')#Y 第一座標軸    
     for i in range(20,420,80):
@@ -241,7 +249,9 @@ def draw_panal():#重新產生畫布座標系統
 
     return 
 
-def draw_panal_ss():#重新產生畫布座標系統__Frame6 全息烘焙
+def draw_panal_ss(*sstype):#重新產生畫布座標系統__Frame6 全息烘焙
+    global typess_no
+    canvas_ss.delete("all")    #清除繪圖畫面
     #第一座標Y軸
     canvas_ss.create_line(36,0,36,440,width=2,fill='blue')#Y 第一座標軸    
     for i in range(20,420,80):
@@ -271,24 +281,38 @@ def draw_panal_ss():#重新產生畫布座標系統__Frame6 全息烘焙
             canvas_ss.create_line(k,50,k,410,width=2,fill='#0f1', dash=(10,2)) 
     
     #繪製各階段的底圖
-    '''
-    dry_start = float(rostep_dry_start_E.get())#內定脫水起始溫度 
-    dry_end = float(rostep_dry_end_E.get())#內定脫水結束溫度
-    maillard_start = float(rostep_maillard_start_E.get())#內定梅納階段起始溫度
-    maillard_end = float(rostep_maillard_end_E.get())#內定梅納階段結束溫度
-    development_start = float(rostep_development_start_E.get())#內定完成起始溫度
-    development_end = float(rostep_development_end_E.get())#內定完成結束溫度
+    if sstype[0] == 1: #北歐
+        typess_no = 1
+        canvas_ss.create_rectangle(66+22.5, (420-75*1.6), 66+30, (420-120*1.6),fill='lightgreen', stipple="gray50" )#回溫點區域
+        canvas_ss.create_rectangle(66+285, (420-180*1.6), 66+300, (420-230*1.6),fill='brown', stipple="gray50" )#回溫點區域
 
-    canvas_ss.create_rectangle(36, (420-dry_start*1.6), 900, (420-dry_end*1.6),fill='lightgreen', stipple="gray50" )#脫水期activefill='lightgreen',activestipple="gray50"
-    canvas_ss.create_rectangle(36, (420-maillard_start*1.6), 900, (420-maillard_end*1.6),fill='#ff8000', stipple="gray50" )#梅納期skyblue
-    canvas_ss.create_rectangle(36, (420-development_start*1.6), 900, (420-development_end*1.6),fill='gray', stipple="gray50" )#發展期skyblue
-    '''
-    #繪製全息烘焙的預估底圖
-    #canvas_ss.create_rectangle(66, (420-70*1.6), 115, (420-90*1.6),fill='lightgreen', stipple="gray50" )#回溫點範圍
-    #canvas_ss.create_rectangle(115, (420-90*1.6), 126, (420-100*1.6),fill='blue', stipple="gray50" )#T0點範圍
-    #canvas_ss.create_rectangle(141, (420-110*1.6), 171, (420-120*1.6),fill='#ff8000', stipple="gray50" )#T1點範圍
-    #canvas_ss.create_rectangle(351, (420-170*1.6), 381, (420-190*1.6),fill='red', stipple="gray50" )#T2點範圍
+        #print(sstype)
+    elif sstype[0] == 2: #Scott Rao
+        typess_no = 2
+        #print(sstype)
+        dry_start = float(rostep_dry_start_E.get())#內定脫水起始溫度 
+        dry_end = float(rostep_dry_end_E.get())#內定脫水結束溫度
+        maillard_start = float(rostep_maillard_start_E.get())#內定梅納階段起始溫度
+        maillard_end = float(rostep_maillard_end_E.get())#內定梅納階段結束溫度
+        development_start = float(rostep_development_start_E.get())#內定完成起始溫度
+        development_end = float(rostep_development_end_E.get())#內定完成結束溫度
+        canvas_ss.create_rectangle(36, (420-dry_start*1.6), 900, (420-dry_end*1.6),fill='lightgreen', stipple="gray50" )#脫水期activefill='lightgreen',activestipple="gray50"
+        canvas_ss.create_rectangle(36, (420-maillard_start*1.6), 900, (420-maillard_end*1.6),fill='#ff8000', stipple="gray50" )#梅納期skyblue
+        canvas_ss.create_rectangle(36, (420-development_start*1.6), 900, (420-development_end*1.6),fill='gray', stipple="gray50" )#發展期skyblue
+    elif sstype[0] == 3: #小野繕造
+        typess_no = 3
+        #print(sstype)
 
+    elif sstype[0] == 4:#繪製全息烘焙的預估底圖
+        typess_no = 4
+        #print(sstype)
+        canvas_ss.create_rectangle(66, (420-70*1.6), 115, (420-90*1.6),fill='lightgreen', stipple="gray50" )#回溫點範圍
+        canvas_ss.create_rectangle(115, (420-90*1.6), 126, (420-100*1.6),fill='blue', stipple="gray50" )#T0點範圍
+        canvas_ss.create_rectangle(141, (420-110*1.6), 171, (420-120*1.6),fill='#ff8000', stipple="gray50" )#T1點範圍
+        canvas_ss.create_rectangle(351, (420-170*1.6), 381, (420-190*1.6),fill='red', stipple="gray50" )#T2點範圍
+    else:
+        typess_no = 0
+        #print("未選擇烘焙法")
 
     return  
 
@@ -333,7 +357,7 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
     global t0_temp  #T0點溫度
     global t1_temp  #T1點溫度
     global t2_temp  #T2點溫度
-
+    global typess_no #烘焙方式選擇
     rt1=time.time()#rt1 = 0
     state_a = state_arg
 
@@ -445,9 +469,11 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
         global t0_temp  #T0點溫度
         global t1_temp  #T1點溫度
         global t2_temp  #T2點溫度
+        global typess_no #烘焙方式選擇
         state_sc = ''
         sampling_time = 1 #取樣頻率(秒)
-        if et_slaveaddress != 0 or bt_slaveaddress != 0:
+        #***** 設定溫度表頭參數 *****
+        if et_slaveaddress != 0 or bt_slaveaddress != 0:#***** 設定溫度表頭參數
             #'''
             #***** 設定溫度表頭參數 *****  ==> 測試將*溫度表頭設定參數*放到另一模組(def)
             if mode_E_a == 'RTU' :
@@ -578,8 +604,12 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
             state_sc = ''
             state_a = 'open machine'
             Button(frame1,text="開使記錄", style='W.TButton',command=lambda:roast_state('go')).grid(row=4,column=0,padx=5,pady=5)    
-        
-        elif state_a == 'go' and record_start_flag == 0 :
+            Radiobutton(frame4,text="北歐烘焙法",state=DISABLED).grid(row=0,column=0,columnspan=14,padx=5,pady=5)
+            Radiobutton(frame4,text="Scott Rao_漸降式烘焙法",state=DISABLED).grid(row=0,column=15,columnspan=14,padx=5,pady=5)
+            Radiobutton(frame4,text="小野善造_完全烘焙法",state=DISABLED).grid(row=15,column=0,columnspan=14,padx=5,pady=5)
+            Radiobutton(frame4,text="全息烘焙法",state=DISABLED).grid(row=15,column=15,columnspan=14,padx=5,pady=5)
+
+        elif state_a == 'go' and record_start_flag == 0 :#開始記錄
             record_start_flag = 1 #開始記錄旗標
 
         elif (state_a == 'CHARGE' or ((counter_data_temp >= 1) and (bt_temperature_data[-1] - BT > 0.01))) and charge_flag == 0 and record_start_flag == 1:
@@ -594,6 +624,8 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
             state_a = 'CHARGE'
             canvas.delete("all")
             draw_panal()
+            #print(typess_no)
+            draw_panal_ss(typess_no)
             counter_data = 0
             counter_data_temp = 0
             counter_data_ax = 0
@@ -617,6 +649,7 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
             canvas.create_text(sp2_x,sp2_y,text='CHARGE',fill='red')
 
             Button(frame1,text='回溫點',style='W2.TButton', command=lambda:roast_state('TP')).grid(row=13,column=3)
+
         elif state_a =='FCs' and fc_flag == 0:
             fc_flag = 1
             fc_start_time = counter_data #First crack time start
@@ -633,6 +666,9 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
             canvas.create_text(sp2_x,sp2_y,text='FCs',fill='red')
 
             Button(frame1,text='一爆',state=DISABLED, style='W2.TButton',command=lambda:roast_state('FCs')).grid(row=15,column=3)
+            if typess_no == 1 :#估計北歐烘焙的下豆點範圍
+                canvas_ss.create_rectangle(66+counter_data_temp/2+13, (420-190*1.6), 66+counter_data_temp/2+60, (420-210*1.6),fill='brown', stipple="gray50" )#下豆點區域
+
 
         elif state_a =='FCe' and fc_end_flag == 0:
             fc_end_flag = 1
@@ -645,11 +681,13 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
             Button(frame1,text='二爆',state=DISABLED, style='W2.TButton',command=lambda:roast_state('SCs')).grid(row=17,column=2)
             shinf = '   ' + str(BT) +' | '+ roast_time
             sc_E.insert(0,shinf)
+
         elif state_a =='SCe' and secondc_end_flag == 0:
             secondc_end_flag = 1
             Button(frame1,text='二爆結束',state=DISABLED, style='W2.TButton',command=lambda:roast_state('SCe')).grid(row=17,column=3)
             shinf = '   ' + str(BT) +' | '+ roast_time
             scend_E.insert(0,shinf)
+
         elif ((counter_data_temp >= 5) and ((bt_temperature_data[-1] - BT > 1) or (state_a =='DROP'))) and (drop_flag == 0 and fc_flag == 1):
             drop_flag = 1
             Button(frame1,text='下豆',state=DISABLED, style='W2.TButton',command=lambda:roast_state('DROP')).grid(row=17,column=4)
@@ -684,10 +722,11 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
                 canvas.create_text(sp2_x,sp2_y,text='TP',fill='red')
 
                 #*****----- 全息烘焙繪圖 回溫點 -----*****
-                canvas_ss.create_rectangle((36 + counter_data_temp/2), (420-70*1.6), (126 + counter_data_temp/2), (420-90*1.6),fill='lightgreen', stipple="gray50" )#回溫點範圍
-                canvas_ss.create_line(36,420-(BT*1.6),(66 + counter_data_temp/2),420-(BT * 1.6),width=1,fill='#ff8000', dash=(10,2))
-                canvas_ss.create_line((66 + counter_data_temp/2),420-(BT*1.6),(66 + counter_data_temp/2),420,width=1,fill='#ff8000', dash=(10,2))
-                canvas_ss.create_text((10+36 + counter_data_temp/2),420-(BT * 1.6)+10,text='回溫點',fill='brown')
+                if typess_no == 4:
+                    canvas_ss.create_rectangle((36 + counter_data_temp/2), (420-70*1.6), (126 + counter_data_temp/2), (420-90*1.6),fill='lightgreen', stipple="gray50" )#回溫點範圍
+                    canvas_ss.create_line(36,420-(BT*1.6),(66 + counter_data_temp/2),420-(BT * 1.6),width=1,fill='#ff8000', dash=(10,2))
+                    canvas_ss.create_line((66 + counter_data_temp/2),420-(BT*1.6),(66 + counter_data_temp/2),420,width=1,fill='#ff8000', dash=(10,2))
+                    canvas_ss.create_text((10+36 + counter_data_temp/2),420-(BT * 1.6)+10,text='回溫點',fill='brown')
                 #*****----- 全息烘焙繪圖 End -----*****
                 Button(frame1,text='脫水結束', style='W2.TButton',command=lambda:roast_state('DRYe')).grid(row=13,column=4)
 
@@ -730,7 +769,7 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
             Button(frame1,text='金黃點',state=DISABLED, style='W2.TButton',command=lambda:roast_state('GDp')).grid(row=15,column=2)
 
         #---------- 全息烘焙繪圖 ----------
-        if BT >= t0_temp and rtp_flag == 1 and ss_t0_flag == 0:
+        if BT >= t0_temp and rtp_flag == 1 and ss_t0_flag == 0 and typess_no == 4:
             #*****----- 全息烘焙繪圖 T0點 -----*****
             ss_t0_flag = 1
             canvas_ss.create_rectangle((36 + counter_data_temp/2), (420-90*1.6), (126 + counter_data_temp/2), (420-100*1.6),fill='blue', stipple="gray50" )#T0點範圍
@@ -739,7 +778,7 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
             canvas_ss.create_text((15+66 + counter_data_temp/2),420-(BT * 1.6)+10,text='T0點',fill='brown')
             #*****----- 全息烘焙繪圖 T0 End -----*****
 
-        if BT >= t1_temp and rtp_flag == 1 and ss_t1_flag == 0:
+        if BT >= t1_temp and rtp_flag == 1 and ss_t1_flag == 0 and typess_no == 4:
             #*****----- 全息烘焙繪圖 T1點 -----*****
             ss_t1_flag = 1
             canvas_ss.create_rectangle((36 + counter_data_temp/2), (420-110*1.6), (126 + counter_data_temp/2), (420-120*1.6),fill='#ff8000', stipple="gray50" )#T1點範圍
@@ -748,7 +787,7 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
             canvas_ss.create_text((15+66 + counter_data_temp/2),420-(BT * 1.6)+10,text='T1點',fill='brown')
             #*****----- 全息烘焙繪圖 T1 End -----*****
 
-        if BT >= t2_temp and rtp_flag == 1 and ss_t2_flag == 0:
+        if BT >= t2_temp and rtp_flag == 1 and ss_t2_flag == 0 and typess_no == 4:
             #*****----- 全息烘焙繪圖 T2點 -----*****
             ss_t2_flag = 1
             canvas_ss.create_rectangle((36 + counter_data_temp/2), (420-170*1.6), (126 + counter_data_temp/2), (420-190*1.6),fill='red', stipple="gray50" )#T2點範圍
@@ -1133,6 +1172,14 @@ def argument_setup(*args) -> None: #通訊參數設定儲存
             #'''
         except: #Exception
                 messagebox.showinfo('information', '不知道怎麼了，反正發生錯誤惹')
+    elif args[0] == 6:#讀取Artisan檔案
+        artisan_data_load =[]
+        r_f=args[1].get()
+        with open( r_f,'r') as f: 
+            for artisan_load in f.readlines() :
+                artisan_data_load.append(artisan_load)
+        #redraw_profile(artisan_data_load,r_f)     
+        print(artisan_data_load)   
     return
 
 def sl_f_ch(source):#壓差計選擇設定
@@ -1256,22 +1303,25 @@ def redraw_profile(roast_data_load,r_f):#歷史檔案曲線繪圖
         canvas.create_line(40+time_data[j],600-et_temperature_data[j],40+time_data[j+1],600-et_temperature_data[j+1],width=2,fill='blue')
         canvas.create_line(40+time_data[j],600-ror_et[j],40+time_data[j+1],600-ror_et[j+1],width=2,fill='green')
         canvas.create_line(40+time_data[j],600-entry_temperature_data[j],40+time_data[j+1],600-entry_temperature_data[j+1],width=2,fill='brown')
+    try:
+        p_s = 40
+        p_d = p_s + int(step_data[0])*1
+        p_m = p_s + int(step_data[1])*1
+        p_f = p_s + int(step_data[2])*1
+        pp_d = round((int(step_data[0]) / int(step_data[2]) * 100),2)
+        pp_m = round(((int(step_data[1]) - int(step_data[0])) / int(step_data[2]) * 100),2)
+        pp_f = round(((int(step_data[2]) - int(step_data[1])) / int(step_data[2]) * 100),2)
 
-    p_s = 40
-    p_d = p_s + int(step_data[0])*1
-    p_m = p_s + int(step_data[1])*1
-    p_f = p_s + int(step_data[2])*1
-    pp_d = round((int(step_data[0]) / int(step_data[2]) * 100),2)
-    pp_m = round(((int(step_data[1]) - int(step_data[0])) / int(step_data[2]) * 100),2)
-    pp_f = round(((int(step_data[2]) - int(step_data[1])) / int(step_data[2]) * 100),2)
+        canvas.create_line(p_s, 20, p_d, 20, width=8, fill='green')  #脫水時間
+        canvas.create_line(p_d, 20, p_m, 20, width=8, fill='#FF8800')    #梅納時間
+        canvas.create_line(p_m, 20, p_f, 20, width=8, fill='brown')  #發展時間
 
-    canvas.create_line(p_s, 20, p_d, 20, width=8, fill='green')  #脫水時間
-    canvas.create_line(p_d, 20, p_m, 20, width=8, fill='#FF8800')    #梅納時間
-    canvas.create_line(p_m, 20, p_f, 20, width=8, fill='brown')  #發展時間
+        canvas.create_text(p_s + 40,40,text=str(pp_d)+' %',fill='green')
+        canvas.create_text(p_d + 40,40,text=str(pp_m)+' %',fill='#FF8800')
+        canvas.create_text(p_m + 40,40,text=str(pp_f)+' %',fill='brown')
+    except:
+        messagebox.showinfo('information', '不知道怎麼了，反正發生錯誤惹')
 
-    canvas.create_text(p_s + 40,40,text=str(pp_d)+' %',fill='green')
-    canvas.create_text(p_d + 40,40,text=str(pp_m)+' %',fill='#FF8800')
-    canvas.create_text(p_m + 40,40,text=str(pp_f)+' %',fill='brown')
     #********** 繪圖區段 END ***********
     #********** 相關資訊區段 ***********
 
@@ -1497,20 +1547,21 @@ def frame3_modu():
 def frame4_modu():
     var_rostype = IntVar()
     var_rostype.set(2)
-    rostype_nd_1 = Radiobutton(frame4,text="北歐烘焙法",variable=var_rostype,value = 1,command=lambda:print('1'))
-    rostype_nd_1.grid(row=0,column=0,columnspan=9,padx=5,pady=5)
+    rostype_nd_1 = Radiobutton(frame4,text="北歐烘焙法",variable=var_rostype,value = 1,command=lambda:draw_panal_ss(1))
+    rostype_nd_1.grid(row=0,column=0,columnspan=14,padx=5,pady=5)
 
-    rostype_sr_2 = Radiobutton(frame4,text="Scott Rao_漸降式烘焙法",variable=var_rostype,value = 2,command=lambda:print('2'))
-    rostype_sr_2.grid(row=0,column=11,columnspan=9,padx=5,pady=5)
+    rostype_sr_2 = Radiobutton(frame4,text="Scott Rao_漸降式烘焙法",variable=var_rostype,value = 2,command=lambda:draw_panal_ss(2))
+    rostype_sr_2.grid(row=0,column=15,columnspan=14,padx=5,pady=5)
 
-    rostype_sn_3 = Radiobutton(frame4,text="小野善造_完全烘焙法",variable=var_rostype,value = 3,command=lambda:print('3'))
-    rostype_sn_3.grid(row=10,column=0,columnspan=9,padx=5,pady=5)
+    rostype_sn_3 = Radiobutton(frame4,text="小野善造_完全烘焙法",variable=var_rostype,value = 3,command=lambda:draw_panal_ss(3))
+    rostype_sn_3.grid(row=15,column=0,columnspan=14,padx=5,pady=5)
 
-    rostype_ss_4 = Radiobutton(frame4,text="全息烘焙法",variable=var_rostype,value = 4,command=lambda:print('4'))
-    rostype_ss_4.grid(row=10,column=11,columnspan=9,padx=5,pady=5)
+    rostype_ss_4 = Radiobutton(frame4,text="全息烘焙法",variable=var_rostype,value = 4,command=lambda:draw_panal_ss(4))
+    rostype_ss_4.grid(row=15,column=15,columnspan=14,padx=5,pady=5)
+    #******************************************************************************************
     #北歐烘焙法
-    rostype_nd_text= Text(frame4,height=10,width=60 ,foreground='black',font="Keiu 16")
-    rostype_nd_text.grid(row=2,column=0,columnspan=9)
+    rostype_nd_text= Text(frame4,height=15,width=65 ,foreground='black',font="Keiu 16")
+    rostype_nd_text.grid(row=2,column=0,columnspan=14,padx=5,pady=5)
     rostype_nd_text.insert(END,"入豆溫接近一爆溫(風門全開)，回溫點約在40 ~ 60秒\n")
     rostype_nd_text.insert(END,"一爆起26 ~ 120秒之間下豆，義式豆一爆後120 ~ 180秒下豆\n")
     rostype_nd_text.insert(END,"總烘焙時間約在9分半至10分，常態上於一爆密集下豆\n")
@@ -1518,37 +1569,56 @@ def frame4_modu():
     rostype_nd_text.insert(END,"適合水果調性豐富的生豆，如肯亞SL28/SL34，衣索比亞原生種，巴拿馬藝妓\n")
 
     #分隔線
-    line_4_1 = ttk.Separator(frame4, orient=VERTICAL, style="Line.TSeparator").grid(row=0, rowspan=20,column=10, sticky='ns')
+    line_4_1 = ttk.Separator(frame4, orient=VERTICAL, style="Line.TSeparator").grid(row=0, rowspan=20,column=14, sticky='ns')
 
     #Scott Rao_漸降式烘焙法
-    rostype_sr_text= Text(frame4,height=10,width=60, foreground='blue',font="Keiu 16")
-    rostype_sr_text.grid(row=2,column=11,columnspan=9)
-    rostype_sr_text.insert(END,"入豆溫接近一爆溫(風門全開)，回溫點約在40 ~ 60秒\n")
-    rostype_sr_text.insert(END,"一爆起26 ~ 120秒之間下豆，義式豆一爆後120 ~ 180秒下豆\n")
-    rostype_sr_text.insert(END,"總烘焙時間約在9分半至10分，常態上於一爆密集下豆\n")
-    rostype_sr_text.insert(END,"磨粉後內外差20以上(常見 外75 / 內100)\n")
-    rostype_sr_text.insert(END,"適合水果調性豐富的生豆，如肯亞SL28/SL34，衣索比亞原生種，巴拿馬藝妓\n")
+    rostype_sr_text= Text(frame4,height=15,width=65, foreground='blue',font="Keiu 16")
+    rostype_sr_text.grid(row=2,column=15,columnspan=14,padx=5,pady=5)
+    rostype_sr_text.insert(END,"1.烘焙前期給予較大的火力，能夠幫助整個烘焙環境迅速回到合理範圍。\n")
+    rostype_sr_text.insert(END,"2.如果採用前段悶蒸法(Soak)，建議第一分鐘的火力維持20%，而通常\n")
+    rostype_sr_text.insert(END,"使用悶蒸法的時機在於用12公斤以下的小型烘豆機，或是鍋次之間烘焙\n")
+    rostype_sr_text.insert(END,"機的溫度無法平順下降時使用。\n")
+    rostype_sr_text.insert(END,"3.火力建議能在一爆前40 - 45秒之間進行調整。在調整瓦斯之後，如果\n")
+    rostype_sr_text.insert(END,"ROR在一爆前後出現變平、上升又失速，代表火力太大；\n")
+    rostype_sr_text.insert(END,"如果一爆前ROR變成平坦然後失速，代表火力過低。\n")
+    rostype_sr_text.insert(END,"4.一爆開始後直到發展率(DTR)占整體發展時間12%之前，都是失速危險\n")
+    rostype_sr_text.insert(END,"期。而當一爆後發展率(DTR)超過16%，則是升溫暴衝的危險期。\n")
+    rostype_sr_text.insert(END,"因此，一爆後最佳調降火力的時機，是在發展率(DTR) 12% ~ 16%之間\n")
+    rostype_sr_text.insert(END,"5.入風溫室一個有用的指標，用來預測及調整烘焙曲線，\n")
+    rostype_sr_text.insert(END,"而與火力大小有較大的關聯性，可藉由火力調整來影響入風溫。\n")
+    rostype_sr_text.insert(END,"\n")
 
     #橫分隔線
-    line_4_2 = ttk.Separator(frame4, orient=HORIZONTAL, style="Line.TSeparator").grid(row=8,column=0, columnspan=20, sticky='ew')#
+    line_4_2 = ttk.Separator(frame4, orient=HORIZONTAL, style="Line.TSeparator").grid(row=14,column=0, columnspan=30, sticky='ew')#
 
     #小野善造_完全烘焙法
-    rostype_sn_text= Text(frame4,height=10,width=60, foreground='#ff8000',font="Keiu 16")
-    rostype_sn_text.grid(row=12,column=0,columnspan=9)
-    rostype_sn_text.insert(END,"入豆溫接近一爆溫(風門全開)，回溫點約在40 ~ 60秒\n")
-    rostype_sn_text.insert(END,"一爆起26 ~ 120秒之間下豆，義式豆一爆後120 ~ 180秒下豆\n")
-    rostype_sn_text.insert(END,"總烘焙時間約在9分半至10分，常態上於一爆密集下豆\n")
-    rostype_sn_text.insert(END,"磨粉後內外差20以上(常見 外75 / 內100)\n")
-    rostype_sn_text.insert(END,"適合水果調性豐富的生豆，如肯亞SL28/SL34，衣索比亞原生種，巴拿馬藝妓\n")
+    rostype_sn_text= Text(frame4,height=15,width=65, foreground='red',font="Keiu 16")
+    rostype_sn_text.grid(row=17,column=0,columnspan=14,padx=5,pady=5)
+    rostype_sn_text.insert(END,"1.又稱'長時間烘焙'，其中分為三段:\n")
+    rostype_sn_text.insert(END,"*'預備烘焙':豆溫0 ~ 130度約第7分鐘，到達160度約第12分鐘\n")
+    rostype_sn_text.insert(END,"*'正式烘焙':豆溫160至185度之間，此時每分鐘ROR約4~5度(以1公斤烘焙為例)；\n")
+    rostype_sn_text.insert(END,"一爆點(185度)約17 ~ 19分鐘；二爆點208度約在第23分鐘，在豆溫\n")
+    rostype_sn_text.insert(END,"218度約第26分鐘時結束二爆。\n")
+    rostype_sn_text.insert(END,"*'最終烘焙':使溫度停止變化，並維持固定的溫度。用來修正豆子的發展狀態。\n")
+    rostype_sn_text.insert(END,"2.一爆/二爆皆是指'開始連續爆裂'之後算起。\n")
+    rostype_sn_text.insert(END,"3.重視風門的操作，認為是烘焙過程中的首要條件，也是決定烘焙成果優劣的關鍵。\n")
+    rostype_sn_text.insert(END,"4.醇厚度、甜味、苦味的均衡。利於保存，風味衰敗速度慢。\n")
+    rostype_sn_text.insert(END,"\n")
+    rostype_sn_text.insert(END,"\n")
 
     #全息烘焙法
-    rostype_ss_text= Text(frame4,height=10,width=60, foreground='green',font="Keiu 16")
-    rostype_ss_text.grid(row=12,column=11,columnspan=9)
-    rostype_ss_text.insert(END,"入豆溫接近一爆溫(風門全開)，回溫點約在40 ~ 60秒\n")
-    rostype_ss_text.insert(END,"一爆起26 ~ 120秒之間下豆，義式豆一爆後120 ~ 180秒下豆\n")
-    rostype_ss_text.insert(END,"總烘焙時間約在9分半至10分，常態上於一爆密集下豆\n")
-    rostype_ss_text.insert(END,"磨粉後內外差20以上(常見 外75 / 內100)\n")
-    rostype_ss_text.insert(END,"適合水果調性豐富的生豆，如肯亞SL28/SL34，衣索比亞原生種，巴拿馬藝妓\n")
+    rostype_ss_text= Text(frame4,height=15,width=65, foreground='green',font="Keiu 16")
+    rostype_ss_text.grid(row=17,column=15,columnspan=14,padx=5,pady=5)
+    rostype_ss_text.insert(END,"\n")
+    rostype_ss_text.insert(END,"\n")
+    rostype_ss_text.insert(END,"\n")
+    rostype_ss_text.insert(END,"\n")
+    rostype_ss_text.insert(END,"\n")
+    rostype_ss_text.insert(END,"\n")
+    rostype_ss_text.insert(END,"\n")
+    rostype_ss_text.insert(END,"\n")
+    rostype_ss_text.insert(END,"\n")
+    rostype_ss_text.insert(END,"\n")
 
     return
 
@@ -1556,7 +1626,7 @@ def step_change():
     canvas.create_rectangle(0,0, 900, 420,fill='#ffffff', stipple="gray50")
     canvas_ss.create_rectangle(0,0, 900, 420,fill='#ffffff', stipple="gray50")
     draw_panal()    #重繪繪圖座標系統
-    draw_panal_ss()    #重繪繪圖座標系統
+    draw_panal_ss(0)    #重繪繪圖座標系統
     return
 
 def artisan_format(roast_data_load,r_f):
@@ -1678,7 +1748,31 @@ def artisan_format(roast_data_load,r_f):
             time2_data = str("{:02.0f}".format(time2_min)) +':'+str("{:02.0f}".format(round(time2_sec,1)))
 
             f.write(time1_data+"	"+time2_data+"	"+w_artisan_ET[h]+"	"+w_artisan_BT[h]+"	"+w_artisan_Event[h])#+"\n"
+    messagebox.showinfo('OK', '轉換完成檔名為'+r_f +'.csv')
+    return
 
+def read_artisan():
+    inputfile = []
+    root_artisan_f = Tk()
+    root_artisan_f.title("Artisan檔案選擇")
+    root_artisan_f.geometry("400x100")
+
+    var=StringVar()
+    select_artisan_file_cb = Combobox(root_artisan_f,width=15,textvariable=var,font="Keiu 14")#_bytesize
+    select_artisan_file_cb.grid(row=0,column=1,pady=5,padx=5)
+
+    for dirpath , dirnames, filenames in os.walk(os.getcwd()):
+        for f in filenames:
+            if f.split('.')[-1] == 'alog' :
+                inputfile.append(f)#os.path.join(dirpath,f)
+
+    select_artisan_file_cb["value"] = inputfile
+    r_f = select_artisan_file_cb
+
+    Button(root_artisan_f,text="選擇檔案", style='W.TButton',command=lambda:argument_setup(6,r_f)).grid(row=0,column=8,padx=5,pady=5)
+    Button(root_artisan_f,text="確定", style='W.TButton',command=root_artisan_f.destroy).grid(row=1,column=8,padx=5,pady=5)
+
+    root_artisan_f.mainloop()
     return
 
 if __name__ == '__main__' :#主程式及使用者介面設定
@@ -2339,7 +2433,7 @@ if __name__ == '__main__' :#主程式及使用者介面設定
     weather_E.insert(0,'晴天 32.5 °C')#內定天氣溫度
 
     Button(frame5,text="選擇已存資料",style='W3.TButton', command=load_roast_data).grid(row=11,column=10,padx=10,pady=10)#,columnspan=17
-    Button(frame5,text="繪圖 BT & ROR",state=DISABLED,style='W3.TButton', command=lambda:notebook.select(0)).grid(row=11,column=12,padx=10,pady=10)
+    Button(frame5,text="讀Artisan檔案",style='W3.TButton', command=read_artisan).grid(row=11,column=12,padx=10,pady=10)
     Button(frame5,text="通訊參數",state=DISABLED,style='W3.TButton', command=lambda:notebook.select(1)).grid(row=11,column=14,padx=10,pady=10)
     Button(frame5,text="設備參數位址",state=DISABLED,style='W3.TButton', command=lambda:notebook.select(3)).grid(row=11,column=16,padx=10,pady=10)
     #*************** 第五個視窗-烘豆紀錄表 End ***************
@@ -2373,7 +2467,7 @@ if __name__ == '__main__' :#主程式及使用者介面設定
 
     #*************** 第六個視窗-全息烘焙 End ***************
     draw_panal()#產生座標軸
-    draw_panal_ss()#產生座標軸
+    draw_panal_ss(0)#產生座標軸
 
     notebook.add(frame1,text='繪圖 BT & ROR')
     notebook.add(frame2,text='通訊參數')
