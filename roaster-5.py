@@ -11,6 +11,7 @@ import os
 from PIL import Image, ImageTk
 from numpy import var
 #import threading
+import json
 
 def rtime(*args):#烘豆程式的計時器
     rt1 = args[0]   #傳入開機或入豆時間做為總烘豆時數的起點
@@ -130,12 +131,15 @@ def save_data(time_data,bt_temperature_data,ror_bt_data,et_temperature_data,ror_
             f.write(':')
             f.write(str(event_data[i]))
             f.write('\n')
-        f.write(str(step_data[0]))
-        f.write('\n')
-        f.write(str(step_data[1]))
-        f.write('\n')
-        f.write(str(step_data[2]))
-        f.write('\n')
+        try:
+            f.write(str(step_data[0]))
+            f.write('\n')
+            f.write(str(step_data[1]))
+            f.write('\n')
+            f.write(str(step_data[2]))
+            f.write('\n')
+        except:
+            messagebox.showinfo('information', '資料不齊全，無法計算階段百分比')
         #else:
         messagebox.showinfo('information', '存檔完成')
     #'''
@@ -1173,13 +1177,88 @@ def argument_setup(*args) -> None: #通訊參數設定儲存
         except: #Exception
                 messagebox.showinfo('information', '不知道怎麼了，反正發生錯誤惹')
     elif args[0] == 6:#讀取Artisan檔案
-        artisan_data_load =[]
         r_f=args[1].get()
         with open( r_f,'r') as f: 
-            for artisan_load in f.readlines() :
-                artisan_data_load.append(artisan_load)
-        #redraw_profile(artisan_data_load,r_f)     
-        print(artisan_data_load)   
+            artisan_load = f.readlines()
+        #'''
+        #rxt檔案的存檔順序:
+        #1.烘焙日期 2.產品名稱  3.生豆產地  4.生豆名稱  5.水分含量 
+        #6.生豆密度 7.批次重量  8.設備名稱  9.設備容量  10.使用能源
+        #11.操作人員    12.天氣溫度
+        #13.序號:豆溫:豆溫ror:環境溫:環境溫ror:入風溫:時間:事件
+        #print("*************************************************************")
+        r=1 ; artisan_data_load = [] ; temp_array = [] ; temp_array_event = []
+        temp_array_timex = [] ; temp_array_temp1 = [] ; temp_array_temp2 = []
+        float_nu = 0
+        for k in range(len(artisan_load[0])) :
+            if artisan_load[0][k] == ":" :
+                temp_at1 = (artisan_load[0][r:k+1]).split("'")
+                #print(temp_at1) #觀察原始檔內容
+                artisan_data_load.append(temp_at1)
+                r = k+1
+        artisan_data_load.append((artisan_load[0][r:-1]).split("'"))
+        #'''
+        status_type = {'TP_time','TP_BT','DRY_time','DRY_BT','FCs_time','FCs_BT','FCe_time','FCe_BT',\
+        'SCs_time','SCs_BT','SCe_time','SCe_BT','DROP_time','DROP_BT','totaltime','dryphasetime',\
+        'midphasetime','finishphasetime'}
+        status_type_1 = {'roastisodate','beans'}
+        status_type_2 = {'timex','temp1','temp2'}#{時間軸,ET,BT}
+        for uu in range(len(artisan_data_load)):
+            #print(trst[uu])
+            for yy in range(len(artisan_data_load[uu])):
+                #print(trst[uu][yy])
+                #print(yy)
+                #************************
+                if artisan_data_load[uu][yy] in status_type:
+                    #print(yy)
+                    #print((artisan_data_load[uu][yy]))#事件名稱
+                    #print((artisan_data_load[uu][yy+1]))#:
+                    #print((artisan_data_load[uu+1][0]))#數值
+                    temp_array_event.append(artisan_data_load[uu][yy])
+                    temp_array_event.append(artisan_data_load[uu+1][0][1:-2])
+
+                if artisan_data_load[uu][yy] in status_type_1:
+                    temp_array_event.append(artisan_data_load[uu][yy])
+                    temp_array_event.append(artisan_data_load[uu+1][1])
+
+                if artisan_data_load[uu][yy] in status_type_2:
+                    aart = artisan_data_load[uu+1][0].split(',')
+                    if artisan_data_load[uu][yy]  == 'timex':
+                        float_nu = 0
+                    else:
+                        float_nu = 1
+                    for i in range(len(aart)-1):
+                        if i == 0:
+                            temp_array.append(round(float(aart[i][2:]),float_nu))
+                        elif i == (len(aart)-2):
+                            temp_array.append(round(float(aart[i][1:-1]),float_nu))
+                        else:
+                            temp_array.append(round(float(aart[i][1:]),float_nu))
+                    if artisan_data_load[uu][yy] == 'timex':
+                        temp_array_timex = temp_array
+                        temp_array = []
+                    if artisan_data_load[uu][yy] == 'temp1':
+                        temp_array_temp1 = temp_array
+                        temp_array = []
+                    if artisan_data_load[uu][yy] == 'temp2':
+                        temp_array_temp2 = temp_array
+                        temp_array = []
+        #status_type = {'TP_time','TP_BT','DRY_time','DRY_BT','FCs_time','FCs_BT','FCe_time','FCe_BT',\
+        #'SCs_time','SCs_BT','SCe_time','SCe_BT','DROP_time','DROP_BT','totaltime','dryphasetime',\
+        #'midphasetime','finishphasetime'}
+        #status_type_1 = {'roastisodate'}
+        #status_type_2 = {'timex','temp1','temp2'}#{時間軸,ET,BT}
+        #rxt檔案的存檔順序:
+        #1.烘焙日期 2.產品名稱  3.生豆產地  4.生豆名稱  5.水分含量 
+        #6.生豆密度 7.批次重量  8.設備名稱  9.設備容量  10.使用能源
+        #11.操作人員    12.天氣溫度
+        #13.序號:豆溫:豆溫ror:環境溫:環境溫ror:入風溫:時間:事件        
+        print(temp_array_event)#事件
+        #print(len(temp_array_timex))#時間軸
+        #print(len(temp_array_temp1))#ET
+        #print(len(temp_array_temp2))#BT
+
+        #'''
     return
 
 def sl_f_ch(source):#壓差計選擇設定
@@ -2247,7 +2326,7 @@ if __name__ == '__main__' :#主程式及使用者介面設定
     Label(frame3,text="檔案名稱",foreground='blue',font="Keiu 14").grid(row=20,column=1,pady=5,padx=5)
     equipment_name = Entry(frame3,font="Keiu 16")
     equipment_name.grid(row=20,column=2,columnspan=1,pady=5,padx=5)
-    equipment_name.insert(0,'artisan_lwj')
+    equipment_name.insert(0,'arg_test')
 
     Button(frame3,text="參數存檔", style='W1.TButton',command=lambda:argument_setup(1)).grid(row=20,column=3,padx=5,pady=5)
     #橫分隔線
