@@ -13,6 +13,8 @@ from numpy import var
 #import threading
 import json
 
+from pyparsing import col
+
 def rtime(*args):#烘豆程式的計時器
     rt1 = args[0]   #傳入開機或入豆時間做為總烘豆時數的起點
     rt2=time.time() #程式循環一次後會呼叫此時間程式作為當下時間
@@ -29,15 +31,15 @@ def roast_state(state_r): # 設定烘焙階段
     if state_r =='CHARGE':
         canvas.delete("all")
         draw_panal()
-        Button(frame1,text='入豆',style='W2.TButton',state=DISABLED, command=lambda:roast_state('CHARGE')).grid(row=13,column=2)
+        Button(frame1,text='入豆',style='W2.TButton',state=DISABLED, command=lambda:roast_state('CHARGE')).grid(row=8,column=0)
     elif state_r =='TP':
-        Button(frame1,text='回溫點',state=DISABLED,style='W2.TButton', command=lambda:roast_state('TP')).grid(row=13,column=3)
+        Button(frame1,text='回溫點',state=DISABLED,style='W2.TButton', command=lambda:roast_state('TP')).grid(row=9,column=0)
     elif state_r =='DRYE':
-        Button(frame1,text='脫水結束',state=DISABLED, style='W2.TButton',command=lambda:roast_state('DRYe')).grid(row=13,column=4)
+        Button(frame1,text='脫水結束',state=DISABLED, style='W2.TButton',command=lambda:roast_state('DRYe')).grid(row=10,column=0)
     elif state_r =='GDp':
-        Button(frame1,text='金黃點',state=DISABLED, style='W2.TButton',command=lambda:roast_state('GDp')).grid(row=15,column=2)
+        Button(frame1,text='金黃點',state=DISABLED, style='W2.TButton',command=lambda:roast_state('GDp')).grid(row=11,column=0)
     elif state_r =='FCs':
-        Button(frame1,text='一爆',state=DISABLED, style='W2.TButton',command=lambda:roast_state('FCs')).grid(row=15,column=3)
+        Button(frame1,text='一爆',state=DISABLED, style='W2.TButton',command=lambda:roast_state('FCs')).grid(row=12,column=0)
 
     state_a = state_r
     return state_a
@@ -171,18 +173,18 @@ def clean_tree():#清除Tree資料表、資料欄位及相關按鈕復歸
     draw_panal_ss(typess_no)    #重繪繪圖座標系統
 
     #將事件按鈕復歸
-    Button(frame1,text="開機", style='W.TButton',command=lambda:temp_ror('0')).grid(row=2,column=0,padx=5,pady=5)    
-    Button(frame1,text='入豆',style='W2.TButton', command=lambda:roast_state('CHARGE')).grid(row=13,column=2)
-    Button(frame1,text='回溫點',state=DISABLED,style='W2.TButton', command=lambda:roast_state('TP')).grid(row=13,column=3)
-    Button(frame1,text='脫水結束',state=DISABLED, style='W2.TButton',command=lambda:roast_state('DRYe')).grid(row=13,column=4)
-    Button(frame1,text='金黃點',state=DISABLED, style='W2.TButton',command=lambda:roast_state('GDp')).grid(row=15,column=2)
-    Button(frame1,text='一爆', style='W2.TButton',command=lambda:roast_state('FCs')).grid(row=15,column=3)
-    Button(frame1,text='一爆結束', style='W2.TButton',command=lambda:roast_state('FCe')).grid(row=15,column=4)
-    Button(frame1,text='二爆', style='W2.TButton',command=lambda:roast_state('SCs')).grid(row=17,column=2)
-    Button(frame1,text='二爆結束', style='W2.TButton',command=lambda:roast_state('SCe')).grid(row=17,column=3)
-    Button(frame1,text='下豆', style='W2.TButton',command=lambda:roast_state('DROP')).grid(row=17,column=4)
+    Button(frame1,text="開機", style='W.TButton',command=lambda:temp_ror('0')).grid(row=2,column=0,columnspan=2,padx=5,pady=5)    
+    Button(frame1,text='入豆',style='W2.TButton', command=lambda:roast_state('CHARGE')).grid(row=8,column=0)
+    Button(frame1,text='回溫點',state=DISABLED,style='W2.TButton', command=lambda:roast_state('TP')).grid(row=9,column=0)
+    Button(frame1,text='脫水結束',state=DISABLED, style='W2.TButton',command=lambda:roast_state('DRYe')).grid(row=10,column=0)
+    Button(frame1,text='金黃點',state=DISABLED, style='W2.TButton',command=lambda:roast_state('GDp')).grid(row=11,column=0)
+    Button(frame1,text='一爆', style='W2.TButton',command=lambda:roast_state('FCs')).grid(row=12,column=0)
+    Button(frame1,text='一爆結束', style='W2.TButton',command=lambda:roast_state('FCe')).grid(row=13,column=0)
+    Button(frame1,text='二爆', style='W2.TButton',command=lambda:roast_state('SCs')).grid(row=14,column=0)
+    Button(frame1,text='二爆結束', style='W2.TButton',command=lambda:roast_state('SCe')).grid(row=15,column=0)
+    Button(frame1,text='下豆', style='W2.TButton',command=lambda:roast_state('DROP')).grid(row=16,column=0)
 
-    Button(frame1,text="清除表格",state=DISABLED, style='W.TButton',command=clean_tree).grid(row=8,column=0,padx=5,pady=5)
+    Button(frame1,text="清除表格",state=DISABLED, style='W.TButton',command=clean_tree).grid(row=5,column=0,columnspan=2,padx=5,pady=5)
     #將事件狀態發生的資訊欄位資料清空
     charge_E.delete(0,END)
     rtp_E.delete(0,END)
@@ -204,7 +206,7 @@ def clean_tree():#清除Tree資料表、資料欄位及相關按鈕復歸
     rostype_sn_3.grid(row=15,column=0,columnspan=14,padx=5,pady=5)
     rostype_ss_4 = Radiobutton(frame4,text="全息烘焙法",variable=var_rostype,value = 4,command=lambda:draw_panal_ss(4))
     rostype_ss_4.grid(row=15,column=15,columnspan=14,padx=5,pady=5)
-
+    f1_agtron_L_S.config(text='')
 
     messagebox.showinfo('information', '清除完成')
     return
@@ -238,7 +240,38 @@ def draw_panal():#重新產生畫布座標系統
 
         if k > 36 :
             canvas.create_line(k,50,k,410,width=1,fill='#0f1', dash=(10,2)) 
+
+    #********** 事件座標軸 **********
+    canvas_event.delete("all")    #清除事件繪圖畫面
+    #事件座標Y軸
+    canvas_event.create_line(36,10,36,120,width=2,fill='blue')#Y 第一座標軸    
+    for i in range(10,110,10):
+        canvas_event.create_line(36,i,46,i,width=2,fill='red')
+        if i % 50 == 10:
+            canvas_event.create_text(20,i,text=str((11-(i // 10))*10),fill='blue')
+        if i > 10 :
+            canvas_event.create_line(47,i,900,i,width=1,fill='#fac', dash=(10,2))
+    canvas_event.create_text(20,110,text='0',fill='blue')
+    #事件X座標軸
+    canvas_event.create_line(36,110,900,110,width=2,fill='green')#X 時間軸    
+    jup = 0    
+    for k in range(36,876,30):
+        jup += 1
+        if jup == 2 or jup == 7 or jup == 12 or jup == 17 or jup == 22 or jup == 27:
+            canvas_event.create_line(k,100,k,110,width=2,fill='red')
+            canvas_event.create_text(k,118,text=str(jup-2),fill='blue')
+        else:
+            canvas_event.create_line(k,100,k,110,width=2,fill='green')
+
+        if k > 36 :
+            canvas_event.create_line(k,10,k,110,width=1,fill='#fac', dash=(10,2)) 
        
+
+
+
+
+
+
     #階段
     dry_start = float(rostep_dry_start_E.get())#內定脫水起始溫度 
     dry_end = float(rostep_dry_end_E.get())#內定脫水結束溫度
@@ -247,9 +280,9 @@ def draw_panal():#重新產生畫布座標系統
     development_start = float(rostep_development_start_E.get())#內定完成起始溫度
     development_end = float(rostep_development_end_E.get())#內定完成結束溫度
 
-    canvas.create_rectangle(36, (420-dry_start*1.6), 900, (420-dry_end*1.6),fill='lightgreen', stipple="gray50" )#脫水期activefill='lightgreen',activestipple="gray50"
-    canvas.create_rectangle(36, (420-maillard_start*1.6), 900, (420-maillard_end*1.6),fill='#ff8000', stipple="gray50" )#梅納期skyblue
-    canvas.create_rectangle(36, (420-development_start*1.6), 900, (420-development_end*1.6),fill='gray', stipple="gray50" )#發展期skyblue
+    canvas.create_rectangle(36, (420-dry_start*1.6), 900, (420-dry_end*1.6),fill='lightgreen', stipple="gray25" )#脫水期activefill='lightgreen',activestipple="gray50"
+    canvas.create_rectangle(36, (420-maillard_start*1.6), 900, (420-maillard_end*1.6),fill='#ff8000', stipple="gray25" )#梅納期skyblue
+    canvas.create_rectangle(36, (420-development_start*1.6), 900, (420-development_end*1.6),fill='gray', stipple="gray25" )#發展期skyblue
 
     return 
 
@@ -362,13 +395,18 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
     global t1_temp  #T1點溫度
     global t2_temp  #T2點溫度
     global typess_no #烘焙方式選擇
+    global ep_y_0
+    global ep_y_1
+    global ef_y_0
+    global ef_y_1
+
     rt1=time.time()#rt1 = 0
     state_a = state_arg
 
     #將開始按鈕隱藏,防止誤按
-    Button(frame1,text="開機",state=DISABLED, style='W.TButton').grid(row=2,column=0,padx=5,pady=5)    
-    Button(frame1,text='結束記錄', style='W.TButton',command=lambda:temp_ror(1)).grid(row=6,column=0,padx=5,pady=5)#root_t.destroy,columnspan=3
-    Button(frame1,text="清除表格", style='W.TButton',command=clean_tree).grid(row=8,column=0,padx=5,pady=5)
+    Button(frame1,text="開機",state=DISABLED, style='W.TButton').grid(row=2,column=0,columnspan=2,padx=5,pady=5)    
+    Button(frame1,text='結束記錄', style='W.TButton',command=lambda:temp_ror(1)).grid(row=4,column=0,columnspan=2,padx=5,pady=5)#root_t.destroy,columnspan=3
+    Button(frame1,text="清除表格", style='W.TButton',command=clean_tree).grid(row=5,column=0,columnspan=2,padx=5,pady=5)
 
     #'''
     #********** 讀取通訊參數初始值 *********
@@ -426,6 +464,8 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
         event_data = []; ror_bt_data = []; ror_et_data= []
         step_data = []    #階段時間資料
         roast_time = ''
+        ep_y_0 =0 ; ep_y_1 =[0,] ; ef_y_0 =0 ; ef_y_1 = [0,] 
+        # round(float(slider_p.get()),0)  round(float(slider.get()),0)
 
     if et_slaveaddress == 0 and bt_slaveaddress == 0:   #模擬豆溫****************NOTE******
         BT = 190
@@ -474,6 +514,11 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
         global t1_temp  #T1點溫度
         global t2_temp  #T2點溫度
         global typess_no #烘焙方式選擇
+        global ep_y_0
+        global ep_y_1
+        global ef_y_0
+        global ef_y_1
+
         state_sc = ''
         sampling_time = 1 #取樣頻率(秒)
         #***** 設定溫度表頭參數 *****
@@ -607,7 +652,7 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
         if state_a == '0' and charge_flag == 0:#開機狀態
             state_sc = ''
             state_a = 'open machine'
-            Button(frame1,text="開使記錄", style='W.TButton',command=lambda:roast_state('go')).grid(row=4,column=0,padx=5,pady=5)    
+            Button(frame1,text="開使記錄", style='W.TButton',command=lambda:roast_state('go')).grid(row=3,column=0,columnspan=2,padx=5,pady=5)    
             Radiobutton(frame4,text="北歐烘焙法",state=DISABLED).grid(row=0,column=0,columnspan=14,padx=5,pady=5)
             Radiobutton(frame4,text="Scott Rao_漸降式烘焙法",state=DISABLED).grid(row=0,column=15,columnspan=14,padx=5,pady=5)
             Radiobutton(frame4,text="小野善造_完全烘焙法",state=DISABLED).grid(row=15,column=0,columnspan=14,padx=5,pady=5)
@@ -650,9 +695,9 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
             sp2_x = sp1_x + 20
             sp2_y = sp1_y - 20
             canvas.create_line(sp1_x,sp1_y,sp2_x,sp2_y,fill='blue')
-            canvas.create_text(sp2_x,sp2_y,text='CHARGE',fill='red')
-
-            Button(frame1,text='回溫點',style='W2.TButton', command=lambda:roast_state('TP')).grid(row=13,column=3)
+            canvas.create_text(sp2_x,sp2_y,text='CHARGE',fill='red')#state=DISABLED,
+            Button(frame1,text='入豆',state=DISABLED,style='W.TButton', command=lambda:roast_state('CHARGE')).grid(row=8,column=0)
+            Button(frame1,text='回溫點',style='W2.TButton', command=lambda:roast_state('TP')).grid(row=9,column=0)
 
         elif state_a =='FCs' and fc_flag == 0:
             fc_flag = 1
@@ -669,7 +714,7 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
             canvas.create_line(sp1_x,sp1_y,sp2_x,sp2_y,fill='blue')
             canvas.create_text(sp2_x,sp2_y,text='FCs',fill='red')
 
-            Button(frame1,text='一爆',state=DISABLED, style='W2.TButton',command=lambda:roast_state('FCs')).grid(row=15,column=3)
+            Button(frame1,text='一爆',state=DISABLED, style='W2.TButton',command=lambda:roast_state('FCs')).grid(row=12,column=0)
             if typess_no == 1 :#估計北歐烘焙的下豆點範圍
                 canvas_ss.create_rectangle(66+counter_data_temp/2+13, (420-190*1.6), 66+counter_data_temp/2+60, (420-210*1.6),fill='brown', stipple="gray50" )#下豆點區域
 
@@ -678,23 +723,23 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
             fc_end_flag = 1
             shinf = '   ' + str(BT) +' | '+ roast_time
             fcend_E.insert(0,shinf)
-            Button(frame1,text='一爆結束',state=DISABLED, style='W2.TButton',command=lambda:roast_state('FCe')).grid(row=15,column=4)
+            Button(frame1,text='一爆結束',state=DISABLED, style='W2.TButton',command=lambda:roast_state('FCe')).grid(row=13,column=0)
 
         elif state_a =='SCs' and secondc_flag == 0:
             secondc_flag = 1
-            Button(frame1,text='二爆',state=DISABLED, style='W2.TButton',command=lambda:roast_state('SCs')).grid(row=17,column=2)
+            Button(frame1,text='二爆',state=DISABLED, style='W2.TButton',command=lambda:roast_state('SCs')).grid(row=14,column=0)
             shinf = '   ' + str(BT) +' | '+ roast_time
             sc_E.insert(0,shinf)
 
         elif state_a =='SCe' and secondc_end_flag == 0:
             secondc_end_flag = 1
-            Button(frame1,text='二爆結束',state=DISABLED, style='W2.TButton',command=lambda:roast_state('SCe')).grid(row=17,column=3)
+            Button(frame1,text='二爆結束',state=DISABLED, style='W2.TButton',command=lambda:roast_state('SCe')).grid(row=15,column=0)
             shinf = '   ' + str(BT) +' | '+ roast_time
             scend_E.insert(0,shinf)
 
         elif ((counter_data_temp >= 5) and ((bt_temperature_data[-1] - BT > 1) or (state_a =='DROP'))) and (drop_flag == 0 and fc_flag == 1):
             drop_flag = 1
-            Button(frame1,text='下豆',state=DISABLED, style='W2.TButton',command=lambda:roast_state('DROP')).grid(row=17,column=4)
+            Button(frame1,text='下豆',state=DISABLED, style='W2.TButton',command=lambda:roast_state('DROP')).grid(row=16,column=0)
             shinf = '   ' + str(BT) +' | '+ roast_time
             drop_E.insert(0,shinf)
             step_data.append(counter_data_temp)    #發展階段時間資料
@@ -712,7 +757,7 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
         if ((len(bt_temperature_data) >= 2) and (charge_flag == 1) and (rtp_flag == 0)):
             if ((((bt_temperature_data[-2] >= bt_temperature_data[-1]) and (BT > bt_temperature_data[-1]))) or state_a == 'TP'):#
                 state_a = 'TP'
-                Button(frame1,text='回溫點',state=DISABLED,style='W2.TButton', command=lambda:roast_state('TP')).grid(row=13,column=3)
+                Button(frame1,text='回溫點',state=DISABLED,style='W2.TButton', command=lambda:roast_state('TP')).grid(row=9,column=0)
                 rtp_flag = 1 #回溫點旗標
                 shinf = '   ' + str(BT) +' | '+ roast_time
                 rtp_E.insert(0,shinf)
@@ -732,7 +777,7 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
                     canvas_ss.create_line((66 + counter_data_temp/2),420-(BT*1.6),(66 + counter_data_temp/2),420,width=1,fill='#ff8000', dash=(10,2))
                     canvas_ss.create_text((10+36 + counter_data_temp/2),420-(BT * 1.6)+10,text='回溫點',fill='brown')
                 #*****----- 全息烘焙繪圖 End -----*****
-                Button(frame1,text='脫水結束', style='W2.TButton',command=lambda:roast_state('DRYe')).grid(row=13,column=4)
+                Button(frame1,text='脫水結束', style='W2.TButton',command=lambda:roast_state('DRYe')).grid(row=10,column=0)
 
         #---**** 預計脫水結束時間 ****---
         if rtp_flag == 1 and dry_end_flag == 0 and BT_ror > 0:
@@ -744,7 +789,7 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
 
         if ((BT >= 150.0  or state_a == 'DRYe') and (dry_end_flag == 0) and rtp_flag == 1):
             state_a = 'DRYe'
-            Button(frame1,text='脫水結束',state=DISABLED, style='W2.TButton',command=lambda:roast_state('DRYe')).grid(row=13,column=4)
+            Button(frame1,text='脫水結束',state=DISABLED, style='W2.TButton',command=lambda:roast_state('DRYe')).grid(row=10,column=0)
             dry_end_flag = 1 #脫水結束旗標
             shinf = '   ' + str(BT) +' | '+ roast_time
             enddry_E.insert(0,shinf)
@@ -756,7 +801,7 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
             sp2_y = sp1_y - 40
             canvas.create_line(sp1_x,sp1_y,sp2_x,sp2_y,fill='blue')
             canvas.create_text(sp2_x,sp2_y,text='DRYe',fill='blue')
-            Button(frame1,text='金黃點', style='W1.TButton',command=lambda:roast_state('GDp')).grid(row=15,column=2)
+            Button(frame1,text='金黃點', style='W1.TButton',command=lambda:roast_state('GDp')).grid(row=11,column=0)
 
         if (BT >= 170.0  or state_a == 'GDp') and gp_flag == 0 and dry_end_flag == 1:
             state_a = 'GDp'
@@ -770,7 +815,7 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
             sp2_y = sp1_y - 40
             canvas.create_line(sp1_x,sp1_y,sp2_x,sp2_y,fill='blue')
             canvas.create_text(sp2_x,sp2_y,text='GDp',fill='blue')
-            Button(frame1,text='金黃點',state=DISABLED, style='W2.TButton',command=lambda:roast_state('GDp')).grid(row=15,column=2)
+            Button(frame1,text='金黃點',state=DISABLED, style='W2.TButton',command=lambda:roast_state('GDp')).grid(row=11,column=0)
 
         #---------- 全息烘焙繪圖 ----------
         if BT >= t0_temp and rtp_flag == 1 and ss_t0_flag == 0 and typess_no == 4:
@@ -814,6 +859,17 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
         #---------- 全息烘焙繪圖 ----------
 
         #******* 自動事件紀錄 End *******
+
+        #******* 壓差計及瓦斯壓力 *******
+        if counter_data_temp > 3 :
+            temp_state = state_a
+            ep_y_0 = ep_y_1[-1]
+            ef_y_0 = ef_y_1[-1]
+            if temp_state[0] == 'P':
+                ep_y_1.append(round(float(slider_p.get()),0))
+            if temp_state[0] == 'F':
+                ef_y_1.append(round(float(slider.get()),0))
+        #******* 壓差計及瓦斯壓力 End *******
 
         state_sc = state_a #將事件轉成紀錄用變數
          
@@ -861,6 +917,10 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
             canvas_ss.create_line(66+time_data_1,420-bt_temperature_data_1,66+time_data_2,420-bt_temperature_data_2,width=2,fill='red')
             canvas_ss.create_line(66+time_data_1,420-et_temperature_data_1,66+time_data_2,420-et_temperature_data_2,width=2,fill='blue')
             canvas_ss.create_line(66+time_data_1,420-entry_temperature_data_1,66+time_data_2,420-entry_temperature_data_2,width=2,fill='green')
+            
+            #繪出壓差及瓦斯壓力  
+            canvas_event.create_line(66+time_data_1,110-ep_y_0,66+time_data_2,110-ep_y_1[-1],width=2,fill='red')
+            canvas_event.create_line(66+time_data_1,110-ef_y_0,66+time_data_2,110-ef_y_1[-1],width=2,fill='blue')
 
         if counter_data_temp >= 10 :    #10秒鐘過後，繪製RoR曲線
             ror_bt_1 = ror_bt_data[-2] * 10*0.8 #乘以0.8是因為要符合座標軸比例關係
@@ -944,9 +1004,9 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
         msg_save = messagebox.askyesnocancel('Messagebox','是否存檔或取消?')
         if msg_save == True :
             save_data(time_data,bt_temperature_data,ror_bt_data,et_temperature_data,ror_et_data,entry_temperature_data,event_data,step_data)
-            Button(frame1,text='結束記錄',state=DISABLED, style='W.TButton',command=lambda:temp_ror(1)).grid(row=6,column=0,padx=5,pady=5)
+            Button(frame1,text='結束記錄',state=DISABLED, style='W.TButton',command=lambda:temp_ror(1)).grid(row=4,column=0,columnspan=2,padx=5,pady=5)
         elif msg_save == False :
-            Button(frame1,text='結束記錄',state=DISABLED, style='W.TButton',command=lambda:temp_ror(1)).grid(row=6,column=0,padx=5,pady=5)
+            Button(frame1,text='結束記錄',state=DISABLED, style='W.TButton',command=lambda:temp_ror(1)).grid(row=4,column=0,columnspan=2,padx=5,pady=5)
 
     return 1
 
@@ -1089,8 +1149,8 @@ def argument_setup(*args) -> None: #通訊參數設定儲存
             entry_SV_register = int(et_register_SV_E.get()) #入風溫SV註冊位址
 
             #print(bt_slaveaddress, '   ' ,et_slaveaddress)
-        #**********  通訊參數初始值  END *********
-        #***** 溫度表頭設定參數 *****
+            #**********  通訊參數初始值  END *********
+            #***** 溫度表頭設定參數 *****
             if (et_slaveaddress != 0 or bt_slaveaddress != 0):
                 if mode_E_a == 'RTU' :
                     mode= minimalmodbus.MODE_RTU
@@ -1129,7 +1189,7 @@ def argument_setup(*args) -> None: #通訊參數設定儲存
                 instrument_entry.close_port_after_each_call = True
                 instrument_entry.clear_buffers_before_each_transaction = True
 
-        #*****溫度表頭設定參數  END*****
+            #*****溫度表頭設定參數  END*****
             #讀取並顯示豆溫及環境溫之溫控器的PV值
 
             if (et_slaveaddress == 0 and bt_slaveaddress != 0):
@@ -1137,7 +1197,7 @@ def argument_setup(*args) -> None: #通訊參數設定儲存
                 TEST_BT = round(TEST_BT,1)
                 msgtxt = 'OK  豆溫: '+str(TEST_BT)
                 messagebox.showinfo('測試結果', msgtxt)
-                Button(frame1,text="開機", style='W.TButton',command=lambda:temp_ror('0')).grid(row=2,column=0,padx=5,pady=5)
+                Button(frame1,text="開機", style='W.TButton',command=lambda:temp_ror('0')).grid(row=2,column=0,columnspan=2,padx=5,pady=5)
             elif (et_slaveaddress != 0 and bt_slaveaddress != 0):
                 TEST_BT =instrument_bt.read_register(bt_PV_register) / 10
                 TEST_ET =instrument_et.read_register(et_PV_register) / 10
@@ -1145,7 +1205,7 @@ def argument_setup(*args) -> None: #通訊參數設定儲存
                 TEST_ET = round(TEST_ET,1)
                 msgtxt = 'OK  豆溫: '+str(TEST_BT)+'   環境溫: '+str(TEST_ET)
                 messagebox.showinfo('測試結果', msgtxt)
-                Button(frame1,text="開機", style='W.TButton',command=lambda:temp_ror('0')).grid(row=2,column=0,padx=5,pady=5)    
+                Button(frame1,text="開機", style='W.TButton',command=lambda:temp_ror('0')).grid(row=2,column=0,columnspan=2,padx=5,pady=5)    
 
             elif (et_slaveaddress != 0 and bt_slaveaddress != 0 and entry_slaveaddress != 0):
                 TEST_BT =instrument_bt.read_register(bt_PV_register) / 10
@@ -1157,7 +1217,7 @@ def argument_setup(*args) -> None: #通訊參數設定儲存
 
                 msgtxt = 'OK  豆溫: '+str(TEST_BT)+'   環境溫: '+str(TEST_ET)+'   入風溫: '+str(TEST_entry)
                 messagebox.showinfo('測試結果', msgtxt)
-                Button(frame1,text="開機", style='W.TButton',command=lambda:temp_ror('0')).grid(row=2,column=0,padx=5,pady=5)    
+                Button(frame1,text="開機", style='W.TButton',command=lambda:temp_ror('0')).grid(row=2,column=0,columnspan=2,padx=5,pady=5)    
 
             elif (et_slaveaddress != 0 and bt_slaveaddress == 0):
                 #TEST_BT =instrument_bt.read_register(bt_PV_register) / 10
@@ -1166,106 +1226,167 @@ def argument_setup(*args) -> None: #通訊參數設定儲存
                 TEST_ET = round(TEST_ET,1)
                 msgtxt = 'Beware!  豆溫:設定有問題!!    環境溫: ' + str(TEST_ET)
                 messagebox.showinfo('測試結果', msgtxt)
-                Button(frame1,text="開機", style='W.TButton',command=lambda:temp_ror('0')).grid(row=2,column=0,padx=5,pady=5)    
+                Button(frame1,text="開機", style='W.TButton',command=lambda:temp_ror('0')).grid(row=2,column=0,columnspan=2,padx=5,pady=5)    
 
             elif (et_slaveaddress == 0 and bt_slaveaddress == 0):
                 msgtxt = '豆溫: 模擬溫度'
                 messagebox.showinfo('測試結果', msgtxt)
-                Button(frame1,text="開機", style='W.TButton',command=lambda:temp_ror('0')).grid(row=2,column=0,padx=5,pady=5)    
-
+                Button(frame1,text="開機", style='W.TButton',command=lambda:temp_ror('0')).grid(row=2,column=0,columnspan=2,padx=5,pady=5)    
             #'''
         except: #Exception
-                messagebox.showinfo('information', '不知道怎麼了，反正發生錯誤惹')
+            messagebox.showinfo('通訊參數測試訊息', '不知道怎麼了，反正發生錯誤惹')
     elif args[0] == 6:#讀取Artisan檔案
-        r_f=args[1].get()
-        with open( r_f,'r') as f: 
+        r_f_as = args[1].get() #讀取Artisan檔名
+        filename_ar = r_f_as[:-5]+".rxt" #設定轉檔後的檔名
+        with open( r_f_as,'r') as f: 
             artisan_load = f.readlines()
-        #'''
+        print(artisan_load)
+        
+        r=1 ; artisan_data_load = [] ; temp_array_event = []
+        temp_array_timex = [] ; temp_array_temp1 = [] ; temp_array_temp2 = []
+        ttt = ''; zzz = []
+        for k in range(len(artisan_load[0])) :
+            if artisan_load[0][k] == ":" :
+                temp_at1 = (artisan_load[0][r:k+1]).split("'")
+                #print(temp_at1) #觀察原始檔內容
+                artisan_data_load += temp_at1
+                r = k+1
+        artisan_data_load += artisan_load[0][r:-1].split("'")
+        status_type = {'CHARGE_BT','TP_time','TP_BT','DRY_time','DRY_BT','FCs_time','FCs_BT','FCe_time','FCe_BT',\
+                        'SCs_time','SCs_BT','SCe_time','SCe_BT','DROP_time','DROP_BT','totaltime','dryphasetime',\
+                        'midphasetime','finishphasetime','roastisodate','beans'}
+        status_type_2 = {'timex','temp1','temp2'}#{時間軸,ET,BT}
+
+        for item_s in status_type :#讀取{時間軸,ET,BT}以外的值
+            if item_s == 'roastisodate' or item_s == 'beans':#烘豆日期與生豆名稱的格式較特殊
+                add_index = 3
+            else :
+                add_index = 2
+            try:#防止原始資料中沒有記錄到資料 Ex:FCe,SCs,SCe ... 等等。
+                item_index = artisan_data_load.index(item_s)
+                bean_name = list(artisan_data_load[item_index+add_index].split(","))
+                if item_s == 'beans':
+                    fff = (bean_name[0].strip()).split('\\')
+                    ff1 = ''
+                    for ttt in (fff):
+                        if ttt != '':
+                            ff1=ff1+'\\'+ttt
+                    temp_array_event.append(item_s)
+                    temp_array_event.append(ff1)
+
+                    '''
+                    #----- unicode 列印測試 -----
+                    s=['\u5df4\u897f \u559c\u62c9\u6735']
+                    s1 =['\u8863\u7d22\u6bd4\u4e9e \u53e4\u5409 \u7f55\u8c9d\u62c9 \u73ab\u7470\u8318\u8318']
+                    str=s[0]#.decode('unicode_utf-8')  #.encode("EUC_KR")
+                    str1=s1[0]
+                    print(str,str1)
+                    #----- unicode 列印測試 End -----
+                    '''
+                else :
+                    temp_array_event.append(item_s)
+                    temp_array_event.append(bean_name[0].strip())
+                    #print(item_s, ' ', bean_name[0])
+            except:
+                temp_array_event.append(item_s)
+                temp_array_event.append('')
+                #print('no ',item_s)
+
+
+        for item_s in status_type_2 :#讀取{時間軸,ET,BT}
+            www = []
+            #print(item_s)
+            yyy = artisan_data_load.index(item_s)
+            zzz = list(artisan_data_load[yyy+2].split(","))
+            for j in range(len(zzz)-1):
+                ttt = ((zzz[j].strip()).strip('[')).strip(']')
+                if item_s == 'timex':
+                    ttt = round(float(ttt),)
+                else:
+                    ttt = round(float(ttt),1)
+                www.append(ttt)
+            
+            del zzz
+
+            if item_s == 'temp2':
+                temp_array_temp2 = www.copy()
+            elif item_s == 'temp1':
+                temp_array_temp1 = www.copy()
+            elif item_s == 'timex':
+                temp_array_timex = www.copy()
+
+        print('temp1',temp_array_temp1)
+        print('temp2',temp_array_temp2)
+        print('timex',temp_array_timex)
+        print('event',temp_array_event)
+        print(temp_array_event[temp_array_event.index('beans')+1])
+
         #rxt檔案的存檔順序:
         #1.烘焙日期 2.產品名稱  3.生豆產地  4.生豆名稱  5.水分含量 
         #6.生豆密度 7.批次重量  8.設備名稱  9.設備容量  10.使用能源
         #11.操作人員    12.天氣溫度
         #13.序號:豆溫:豆溫ror:環境溫:環境溫ror:入風溫:時間:事件
-        #print("*************************************************************")
-        r=1 ; artisan_data_load = [] ; temp_array = [] ; temp_array_event = []
-        temp_array_timex = [] ; temp_array_temp1 = [] ; temp_array_temp2 = []
-        float_nu = 0
-        for k in range(len(artisan_load[0])) :
-            if artisan_load[0][k] == ":" :
-                temp_at1 = (artisan_load[0][r:k+1]).split("'")
-                #print(temp_at1) #觀察原始檔內容
-                artisan_data_load.append(temp_at1)
-                r = k+1
-        artisan_data_load.append((artisan_load[0][r:-1]).split("'"))
-        #'''
-        status_type = {'TP_time','TP_BT','DRY_time','DRY_BT','FCs_time','FCs_BT','FCe_time','FCe_BT',\
-        'SCs_time','SCs_BT','SCe_time','SCe_BT','DROP_time','DROP_BT','totaltime','dryphasetime',\
-        'midphasetime','finishphasetime'}
-        status_type_1 = {'roastisodate','beans'}
-        status_type_2 = {'timex','temp1','temp2'}#{時間軸,ET,BT}
-        for uu in range(len(artisan_data_load)):
-            #print(trst[uu])
-            for yy in range(len(artisan_data_load[uu])):
-                #print(trst[uu][yy])
-                #print(yy)
-                #************************
-                if artisan_data_load[uu][yy] in status_type:
-                    #print(yy)
-                    #print((artisan_data_load[uu][yy]))#事件名稱
-                    #print((artisan_data_load[uu][yy+1]))#:
-                    #print((artisan_data_load[uu+1][0]))#數值
-                    temp_array_event.append(artisan_data_load[uu][yy])
-                    temp_array_event.append(artisan_data_load[uu+1][0][1:-2])
+            
+        with open(filename_ar,'w') as f_a:
+            f_a.write(temp_array_event[temp_array_event.index('roastisodate')+1])  #烘焙日期
+            f_a.write('\n')
+            f_a.write(temp_array_event[temp_array_event.index('beans')+1])   #產品名稱
+            f_a.write('\n')
+            f_a.write('')   #生豆產地
+            f_a.write('\n')
+            f_a.write('')   #生豆名稱
+            f_a.write('\n')
+            f_a.write('')   #水分含量
+            f_a.write('\n')
+            f_a.write('')   #生豆密度
+            f_a.write('\n')
+            f_a.write('')   #批次重量
+            f_a.write('\n')
+            f_a.write('')   #設備名稱
+            f_a.write('\n')
+            f_a.write('')   #設備容量
+            f_a.write('\n')
+            f_a.write('')   #使用能源
+            f_a.write('\n')
+            f_a.write('')   #操作人員
+            f_a.write('\n')
+            f_a.write('')   #天氣溫度
+            f_a.write('\n')
 
-                if artisan_data_load[uu][yy] in status_type_1:
-                    temp_array_event.append(artisan_data_load[uu][yy])
-                    temp_array_event.append(artisan_data_load[uu+1][1])
-
-                if artisan_data_load[uu][yy] in status_type_2:
-                    aart = artisan_data_load[uu+1][0].split(',')
-                    if artisan_data_load[uu][yy]  == 'timex':
-                        float_nu = 0
-                    else:
-                        float_nu = 1
-                    for i in range(len(aart)-1):
-                        if i == 0:
-                            temp_array.append(round(float(aart[i][2:]),float_nu))
-                        elif i == (len(aart)-2):
-                            temp_array.append(round(float(aart[i][1:-1]),float_nu))
-                        else:
-                            temp_array.append(round(float(aart[i][1:]),float_nu))
-                    if artisan_data_load[uu][yy] == 'timex':
-                        temp_array_timex = temp_array
-                        temp_array = []
-                    if artisan_data_load[uu][yy] == 'temp1':
-                        temp_array_temp1 = temp_array
-                        temp_array = []
-                    if artisan_data_load[uu][yy] == 'temp2':
-                        temp_array_temp2 = temp_array
-                        temp_array = []
-        #status_type = {'TP_time','TP_BT','DRY_time','DRY_BT','FCs_time','FCs_BT','FCe_time','FCe_BT',\
-        #'SCs_time','SCs_BT','SCe_time','SCe_BT','DROP_time','DROP_BT','totaltime','dryphasetime',\
-        #'midphasetime','finishphasetime'}
-        #status_type_1 = {'roastisodate'}
-        #status_type_2 = {'timex','temp1','temp2'}#{時間軸,ET,BT}
-        #rxt檔案的存檔順序:
-        #1.烘焙日期 2.產品名稱  3.生豆產地  4.生豆名稱  5.水分含量 
-        #6.生豆密度 7.批次重量  8.設備名稱  9.設備容量  10.使用能源
-        #11.操作人員    12.天氣溫度
-        #13.序號:豆溫:豆溫ror:環境溫:環境溫ror:入風溫:時間:事件        
-        print(temp_array_event)#事件
-        #print(len(temp_array_timex))#時間軸
-        #print(len(temp_array_temp1))#ET
-        #print(len(temp_array_temp2))#BT
-
-        #'''
+            #存檔順序 序號 :豆溫:豆溫ror:環境溫:環境溫ror:入風溫:時間:事件
+            for i in range(len(temp_array_timex)):   
+                f_a.write(str(i+1)+':') #序號
+                f_a.write(str(temp_array_temp2[i])) #豆溫
+                f_a.write(':')
+                f_a.write(str('0')) #豆溫ror
+                f_a.write(':')
+                f_a.write(str(temp_array_temp1[i])) #環境溫
+                f_a.write(':')
+                f_a.write(str('0')) #環境溫ror
+                f_a.write(':')
+                f_a.write(str('0')) #入風溫
+                f_a.write(':')
+                f_a.write(str(round((temp_array_timex[i] / 0.5),1)))    #時間
+                f_a.write(':')
+                f_a.write(str('0')) #事件
+                f_a.write('\n')
+            try:
+                f_a.write(str(temp_array_event[temp_array_event.index('dryphasetime')+1]))
+                f_a.write('\n')
+                f_a.write(str(temp_array_event[temp_array_event.index('midphasetime')+1]))
+                f_a.write('\n')
+                f_a.write(str(temp_array_event[temp_array_event.index('finishphasetime')+1]))
+                f_a.write('\n')
+            except:
+                messagebox.showinfo('alog to rxt', '資料不齊全，無法計算階段百分比')
+        messagebox.showinfo('alon to rxt', '檔案轉換完成')
     return
 
 def sl_f_ch(source):#壓差計選擇設定
     #print(type(float(source)))
     sl_value = round(float(source),0)
     f_value = 'F'+str(sl_value)
-    slf_ch_b=Button(frame1,text=f_value,style='Wf.TButton',command=lambda:roast_state(f_value)).grid(row=13,column=15)
+    slf_ch_b=Button(frame1,text=f_value,style='Wf.TButton',command=lambda:roast_state(f_value)).grid(row=18,column=5)
     roast_state(f_value)
     return 
     
@@ -1273,8 +1394,9 @@ def sl_p_ch(source):#瓦斯壓力選擇設定
     #print(type(float(source)))
     sl_value = round(float(source),0)
     p_value = 'P'+str(sl_value)
-    slp_ch_b=Button(frame1,text=p_value,style='Wf.TButton', command=lambda:roast_state(p_value)).grid(row=15,column=15)
+    slp_ch_b=Button(frame1,text=p_value,style='Wf.TButton', command=lambda:roast_state(p_value)).grid(row=19,column=5)
     roast_state(p_value)
+    #print(slider_p.get())
     return
 
 def select_file():#選擇已存通訊參數檔案
@@ -1372,9 +1494,9 @@ def redraw_profile(roast_data_load,r_f):#歷史檔案曲線繪圖
         entry_temperature_data.append(float(reda[5])*2)
         time_data.append(float(reda[6])*1)
         event_data.append(str(reda[7]))
-    step_data.append(roast_data_load[-3])
-    step_data.append(roast_data_load[-2])
-    step_data.append(roast_data_load[-1])
+    step_data.append(float(roast_data_load[-3]))
+    step_data.append(float(roast_data_load[-2]))
+    step_data.append(float(roast_data_load[-1]))
 
     for j in range(len(time_data)-1):
         canvas.create_line(40+time_data[j],600-bt_temperature_data[j],40+time_data[j+1],600-bt_temperature_data[j+1],width=2,fill='red')
@@ -1384,12 +1506,12 @@ def redraw_profile(roast_data_load,r_f):#歷史檔案曲線繪圖
         canvas.create_line(40+time_data[j],600-entry_temperature_data[j],40+time_data[j+1],600-entry_temperature_data[j+1],width=2,fill='brown')
     try:
         p_s = 40
-        p_d = p_s + int(step_data[0])*1
-        p_m = p_s + int(step_data[1])*1
-        p_f = p_s + int(step_data[2])*1
-        pp_d = round((int(step_data[0]) / int(step_data[2]) * 100),2)
-        pp_m = round(((int(step_data[1]) - int(step_data[0])) / int(step_data[2]) * 100),2)
-        pp_f = round(((int(step_data[2]) - int(step_data[1])) / int(step_data[2]) * 100),2)
+        p_d = p_s + (step_data[0])*1
+        p_m = p_s + (step_data[1])*1
+        p_f = p_s + (step_data[2])*1
+        pp_d = round(((step_data[0]) / (step_data[2]) * 100),2)
+        pp_m = round((((step_data[1]) - (step_data[0])) / (step_data[2]) * 100),2)
+        pp_f = round((((step_data[2]) - (step_data[1])) / (step_data[2]) * 100),2)
 
         canvas.create_line(p_s, 20, p_d, 20, width=8, fill='green')  #脫水時間
         canvas.create_line(p_d, 20, p_m, 20, width=8, fill='#FF8800')    #梅納時間
@@ -1399,7 +1521,7 @@ def redraw_profile(roast_data_load,r_f):#歷史檔案曲線繪圖
         canvas.create_text(p_d + 40,40,text=str(pp_m)+' %',fill='#FF8800')
         canvas.create_text(p_m + 40,40,text=str(pp_f)+' %',fill='brown')
     except:
-        messagebox.showinfo('information', '不知道怎麼了，反正發生錯誤惹')
+        messagebox.showinfo('歷史檔案', '不知道怎麼了，反正發生錯誤惹')
 
     #********** 繪圖區段 END ***********
     #********** 相關資訊區段 ***********
@@ -1501,17 +1623,17 @@ def redraw_profile(roast_data_load,r_f):#歷史檔案曲線繪圖
 def load_roast_data():#載入歷史檔案
     inputfile = []
     root_roast_f = Tk()
-    root_roast_f.title("參數檔案選擇")
-    root_roast_f.geometry("400x100")
+    root_roast_f.title("歷史檔案選擇")
+    root_roast_f.geometry("800x100")
 
     var=StringVar()
-    select_roast_file_cb = Combobox(root_roast_f,width=15,textvariable=var,font="Keiu 14")#_bytesize
-    select_roast_file_cb.grid(row=0,column=1,pady=5,padx=5)
+    select_roast_file_cb = Combobox(root_roast_f,width=60,textvariable=var,font="Keiu 14")#_bytesize
+    select_roast_file_cb.grid(row=0,column=1,columnspan=4,pady=5,padx=5)
 
     for dirpath , dirnames, filenames in os.walk(os.getcwd()):
         for f in filenames:
-            if f.split('.')[-1] == 'rxt' :
-                inputfile.append(f)#os.path.join(dirpath,f)
+            if f.split('.')[-1] == 'rxt' :#f
+                inputfile.append(os.path.join(dirpath,f))#os.path.join(dirpath,f)
 
     select_roast_file_cb["value"] = inputfile
     r_f = select_roast_file_cb
@@ -1708,7 +1830,7 @@ def step_change():
     draw_panal_ss(0)    #重繪繪圖座標系統
     return
 
-def artisan_format(roast_data_load,r_f):
+def artisan_format(roast_data_load,r_f):#將rxt檔案轉成csv格式
     #.rxt原始存檔順序-->序號:豆溫:豆溫ror:環境溫:環境溫ror:入風溫:時間:事件
     w_artisan_Time1 = []
     w_artisan_Time2 = []
@@ -1830,15 +1952,17 @@ def artisan_format(roast_data_load,r_f):
     messagebox.showinfo('OK', '轉換完成檔名為'+r_f +'.csv')
     return
 
-def read_artisan():
+def read_artisan():#選擇Artisan 的.alog 檔案
+    #將檔名傳入至argument_setup(6,r_f_as)
+    #再將格式轉為rxt
     inputfile = []
     root_artisan_f = Tk()
     root_artisan_f.title("Artisan檔案選擇")
-    root_artisan_f.geometry("400x100")
+    root_artisan_f.geometry("800x100")
 
     var=StringVar()
-    select_artisan_file_cb = Combobox(root_artisan_f,width=15,textvariable=var,font="Keiu 14")#_bytesize
-    select_artisan_file_cb.grid(row=0,column=1,pady=5,padx=5)
+    select_artisan_file_cb = Combobox(root_artisan_f,width=60,textvariable=var,font="Keiu 14")#_bytesize
+    select_artisan_file_cb.grid(row=0,column=1,columnspan=4,pady=5,padx=5)
 
     for dirpath , dirnames, filenames in os.walk(os.getcwd()):
         for f in filenames:
@@ -1846,9 +1970,9 @@ def read_artisan():
                 inputfile.append(f)#os.path.join(dirpath,f)
 
     select_artisan_file_cb["value"] = inputfile
-    r_f = select_artisan_file_cb
+    r_f_as = select_artisan_file_cb
 
-    Button(root_artisan_f,text="選擇檔案", style='W.TButton',command=lambda:argument_setup(6,r_f)).grid(row=0,column=8,padx=5,pady=5)
+    Button(root_artisan_f,text="選擇檔案", style='W.TButton',command=lambda:argument_setup(6,r_f_as)).grid(row=0,column=8,padx=5,pady=5)
     Button(root_artisan_f,text="確定", style='W.TButton',command=root_artisan_f.destroy).grid(row=1,column=8,padx=5,pady=5)
 
     root_artisan_f.mainloop()
@@ -1857,16 +1981,23 @@ def read_artisan():
 if __name__ == '__main__' :#主程式及使用者介面設定
     matplotlib.use('TkAgg')
     global state_a #紀錄烘豆事件即離開溫度記錄的變數
-
     root_t = Tk()
-    root_t.title("Realtime Temperature & RoR")
-    root_t.geometry("1360x760")#1520
+    screenwidth = root_t.winfo_screenwidth()
+    screenheight = root_t.winfo_screenheight()
+    w_win = 1480
+    h_win = 760
+    x_offset = (screenwidth - w_win) / 2
+    y_offset = ((screenheight - h_win) / 2)# - 30
+
+    root_t.title("Shokunin Coffee Roaster")
+    root_t.geometry("%dx%d+%d-%d" %(w_win,h_win,x_offset,y_offset))#1520
     root_t.configure(bg='lightblue')
+    root_t.iconbitmap("coffee_logo.ico")
     
     st = Style() #設定按鈕外觀
-    st.configure('W.TButton', width = 12, background='green', foreground='blue', font=('Keiu', 14 ))
-    st.configure('W1.TButton', width = 12, background='#FF8000', foreground='red', font=('Keiu', 14 ))
-    st.configure('W2.TButton', width = 12,background='grey', foreground='#aa0011', font=('Keiu', 14 ))
+    st.configure('W.TButton', width = 10, background='green', foreground='blue', font=('Keiu', 14 ))
+    st.configure('W1.TButton', width = 10, background='#FF8000', foreground='red', font=('Keiu', 14 ))
+    st.configure('W2.TButton', width = 10,background='grey', foreground='#aa0011', font=('Keiu', 14 ))
     st.configure('W3.TButton', width = 14, background='#FF8000', foreground='blue', font=('Keiu', 14 ))
     st.configure('Wf.TButton', width = 6,background='#7CFC00', foreground='blue', font=('Keiu', 14 ))
 
@@ -1876,110 +2007,113 @@ if __name__ == '__main__' :#主程式及使用者介面設定
     notebook = ttk.Notebook(root_t)
     #*************** 第一個視窗-繪圖 BT & ROR ***************
     frame1 = Frame (root_t, relief=RIDGE, borderwidth=2)#GROOVE RAISED RIDGE
-    frame1.pack(side=BOTTOM, fill='both', ipadx="1c", ipady="1c", expand=1)
+    frame1.pack(side=BOTTOM, fill='both', expand=1)#, ipadx="1c", ipady="1c"
     
     #在Tk的GUI上放置一個畫布，並用.grid()來調整佈局
 
     canvas =Canvas(frame1, width=940, height=460, bg='white')
-    canvas.grid(row=0, rowspan=11 ,column=2, columnspan=17, padx=5, pady=5)
+    canvas.grid(row=0, rowspan=14 ,column=2,columnspan=6, padx=0, pady=0)
+    canvas_event =Canvas(frame1, width=940, height=130, bg='white')
+    canvas_event.grid(row=14, rowspan=3 ,column=2,columnspan=6, padx=0, pady=0)
+   
     #draw_panal()#產生座標軸
 
     #烘豆事件紀錄按鈕
-    Button(frame1,text='入豆',style='W.TButton', command=lambda:roast_state('CHARGE')).grid(row=13,column=2)
-    Button(frame1,text='回溫點',style='W.TButton',state=DISABLED, command=lambda:roast_state('TP')).grid(row=13,column=3)
-    Button(frame1,text='脫水結束', style='W.TButton',state=DISABLED,command=lambda:roast_state('DRYe')).grid(row=13,column=4)
-    Button(frame1,text='金黃點', style='W1.TButton',state=DISABLED,command=lambda:roast_state('GDp')).grid(row=15,column=2)
-    Button(frame1,text='一爆', style='W1.TButton',command=lambda:roast_state('FCs')).grid(row=15,column=3)
-    Button(frame1,text='一爆結束', style='W1.TButton',command=lambda:roast_state('FCe')).grid(row=15,column=4)
-    Button(frame1,text='二爆', style='W2.TButton',command=lambda:roast_state('SCs')).grid(row=17,column=2)
-    Button(frame1,text='二爆結束', style='W2.TButton',command=lambda:roast_state('SCe')).grid(row=17,column=3)
-    Button(frame1,text='下豆', style='W2.TButton',command=lambda:roast_state('DROP')).grid(row=17,column=4)
+    Button(frame1,text='入豆',style='W.TButton', command=lambda:roast_state('CHARGE')).grid(row=8,column=0)
+    Button(frame1,text='回溫點',style='W.TButton',state=DISABLED, command=lambda:roast_state('TP')).grid(row=9,column=0)
+    Button(frame1,text='脫水結束', style='W.TButton',state=DISABLED,command=lambda:roast_state('DRYe')).grid(row=10,column=0)
+    Button(frame1,text='金黃點', style='W1.TButton',state=DISABLED,command=lambda:roast_state('GDp')).grid(row=11,column=0)
+    Button(frame1,text='一爆', style='W1.TButton',command=lambda:roast_state('FCs')).grid(row=12,column=0)
+    Button(frame1,text='一爆結束', style='W1.TButton',command=lambda:roast_state('FCe')).grid(row=13,column=0)
+    Button(frame1,text='二爆', style='W2.TButton',command=lambda:roast_state('SCs')).grid(row=14,column=0)
+    Button(frame1,text='二爆結束', style='W2.TButton',command=lambda:roast_state('SCe')).grid(row=15,column=0)
+    Button(frame1,text='下豆', style='W2.TButton',command=lambda:roast_state('DROP')).grid(row=16,column=0)
     #********* 事件溫度時間顯示 *********
     entry_width = 12
     charge_E = Entry(frame1, width = entry_width)
-    charge_E.grid(row=14,column=2)
+    charge_E.grid(row=8,column=1)
     charge_E.insert(0,'')
     rtp_E = Entry(frame1, width = entry_width)
-    rtp_E.grid(row=14,column=3)
+    rtp_E.grid(row=9,column=1)
     rtp_E.insert(0,'')
     enddry_E = Entry(frame1, width = entry_width)
-    enddry_E.grid(row=14,column=4)
+    enddry_E.grid(row=10,column=1)
     enddry_E.insert(0,'')
     gp_E = Entry(frame1, width = entry_width)
-    gp_E.grid(row=16,column=2)
+    gp_E.grid(row=11,column=1)
     gp_E.insert(0,'')
     fc_E = Entry(frame1, width = entry_width)
-    fc_E.grid(row=16,column=3)
+    fc_E.grid(row=12,column=1)
     fc_E.insert(0,'')
     fcend_E = Entry(frame1, width = entry_width)
-    fcend_E.grid(row=16,column=4)
+    fcend_E.grid(row=13,column=1)
     fcend_E.insert(0,'')
     sc_E = Entry(frame1, width = entry_width)
-    sc_E.grid(row=18,column=2)
+    sc_E.grid(row=14,column=1)
     sc_E.insert(0,'')
     scend_E = Entry(frame1, width = entry_width)
-    scend_E.grid(row=18,column=3)
+    scend_E.grid(row=15,column=1)
     scend_E.insert(0,'')
     drop_E = Entry(frame1, width = entry_width)
-    drop_E.grid(row=18,column=4)
+    drop_E.grid(row=16,column=1)
     drop_E.insert(0,'')
     #********* 事件溫度時間顯示 end *********
 
     #烘焙計時器
-    RoT_l = Label(frame1, text="Timer", width = 6, background="white", foreground="Green", font="Helvetica 10 bold").grid(row=1,column=21,pady=5,padx=5)
+    RoT_l = Label(frame1, text="Timer", width = 6, background="white", foreground="Green", font="Helvetica 10 bold").grid(row=0,column=8,pady=5,padx=5)
     RoT_2 = Label(frame1, background="white", foreground="blue", font="Helvetica 16 bold")
-    RoT_2.grid(row=1,column=22,pady=5,padx=5)
+    RoT_2.grid(row=0,column=9,pady=5,padx=5)
  
     #*****----- 溫度 及 ROR -----*****
     #環境溫
-    mark_et = Label(frame1,text='ET', width = 6, background="white",foreground="blue",font="Helvetica 10 bold").grid(row=2,column=21,pady=5,padx=5)
+    mark_et = Label(frame1,text='ET', width = 6, background="white",foreground="blue",font="Helvetica 10 bold").grid(row=2,column=8,pady=5,padx=5)
     et_temp_l = Label(frame1, width = 8, background="lightgreen",foreground="blue",font="Helvetica 16 bold")
-    et_temp_l.grid(row=2,column=22,pady=5,padx=5)
+    et_temp_l.grid(row=2,column=9,pady=5,padx=5)
     #豆溫
-    mark_bt_l = Label(frame1,text='BT', width = 6, background="white",foreground="red",font="Helvetica 10 bold").grid(row=3,column=21,pady=5,padx=5)
+    mark_bt_l = Label(frame1,text='BT', width = 6, background="white",foreground="red",font="Helvetica 10 bold").grid(row=3,column=8,pady=5,padx=5)
     bt_temp_l = Label(frame1, width = 8, background="yellow",foreground="red",font="Helvetica 16 bold")
-    bt_temp_l.grid(row=3,column=22,pady=5,padx=5)
+    bt_temp_l.grid(row=3,column=9,pady=5,padx=5)
     #入風溫
-    mark_entry_l = Label(frame1,text='Entry', width = 6, background="lightblue",foreground="brown",font="Helvetica 10 bold").grid(row=4,column=21,pady=5,padx=5)
+    mark_entry_l = Label(frame1,text='Entry', width = 6, background="lightblue",foreground="brown",font="Helvetica 10 bold").grid(row=4,column=8,pady=5,padx=5)
     entry_temp_l = Label(frame1, width = 8, background="lightblue",foreground="brown",font="Helvetica 16 bold")
-    entry_temp_l.grid(row=4,column=22,pady=5,padx=5)
+    entry_temp_l.grid(row=4,column=9,pady=5,padx=5)
     #ET ROR
-    #mark_et_ror = Label(frame1,text='△ET', width = 6, background="white",foreground="blue",font="Helvetica 10 bold").grid(row=5,column=21,pady=5,padx=5)
+    #mark_et_ror = Label(frame1,text='△ET', width = 6, background="white",foreground="blue",font="Helvetica 10 bold").grid(row=5,column=8,pady=5,padx=5)
     #et_temp_ror_l = Label(frame1, width = 8, background="lightgreen",foreground="blue",font="Helvetica 16 bold")
-    #et_temp_ror_l.grid(row=5,column=22,pady=5,padx=5)
+    #et_temp_ror_l.grid(row=5,column=9,pady=5,padx=5)
     #BT ROR
-    mark_bt_ror = Label(frame1,text='△BT', width = 6, background="white",foreground="green",font="Helvetica 10 bold").grid(row=6,column=21,pady=5,padx=5)
+    mark_bt_ror = Label(frame1,text='△BT', width = 6, background="white",foreground="green",font="Helvetica 10 bold").grid(row=6,column=8,pady=5,padx=5)
     bt_temp_ror_l = Label(frame1, width = 8, background="yellow",foreground="green",font="Helvetica 16 bold")
-    bt_temp_ror_l.grid(row=6,column=22,pady=5,padx=5)
+    bt_temp_ror_l.grid(row=6,column=9,pady=5,padx=5)
 
-    #事件狀態顯示
-    even_dev = Label(frame1,text='發展時間', width = 8, background="white",foreground="red",font="Helvetica 12 bold").grid(row=8,column=21,pady=5,padx=5)
+    #發展狀態顯示
+    even_dev = Label(frame1,text='發展時間', width = 8, background="white",foreground="red",font="Helvetica 12 bold").grid(row=15,column=8,pady=5,padx=5)
     even_dev_l = Label(frame1, width = 8, background="yellow",foreground="red",font="Helvetica 12 bold")
-    even_dev_l.grid(row=9,column=21,pady=5,padx=5)
-    even_dev_p = Label(frame1,text='發展率', width = 8, background="white",foreground="brown",font="Helvetica 12 bold").grid(row=8,column=22,pady=5,padx=5)
+    even_dev_l.grid(row=16,column=8,pady=5,padx=5)
+    even_dev_p = Label(frame1,text='發展率', width = 8, background="white",foreground="brown",font="Helvetica 12 bold").grid(row=15,column=9,pady=5,padx=5)
     even_dev_p_l = Label(frame1, width = 8, background="green",foreground="yellow",font="Helvetica 12 bold")
-    even_dev_p_l.grid(row=9,column=22,pady=5,padx=5)
+    even_dev_p_l.grid(row=16,column=9,pady=5,padx=5)
 
     #壓差紀錄滑條
     fan_l = Label(frame1,width = 10 ,text="壓差計", background="white",foreground="blue",font="Helvetica 14 bold")
-    fan_l.grid(row=13,column=5,pady=5,padx=5)
-    slider = Scale(frame1, from_=0, to=60,length=300, orient='horizontal',command=sl_f_ch)#orient='vertical'
+    fan_l.grid(row=18,column=2,pady=1,padx=1)
+    slider = Scale(frame1, from_=0, to=60,length=800, orient='horizontal',command=sl_f_ch)#orient='vertical'
     slider.set(10)
-    slider.grid(row=13,column=6,columnspan=8)
-    slf_ch_b=Button(frame1,text='F10',style='Wf.TButton', command=lambda:roast_state('F10')).grid(row=13,column=15)
+    slider.grid(row=18,column=3,columnspan=2)
+    slf_ch_b=Button(frame1,text='F10',style='Wf.TButton', command=lambda:roast_state('F10')).grid(row=18,column=5)
 
     #瓦斯紀錄滑條
     power_l = Label(frame1,width = 10,text="瓦斯KPa", background="white",foreground="red",font="Helvetica 14 bold")
-    power_l.grid(row=15,column=5,pady=5,padx=5)
-    slider_p = Scale(frame1, from_=0, to=100,length=300, orient='horizontal',command=sl_p_ch)
+    power_l.grid(row=19,column=2,pady=1,padx=1)
+    slider_p = Scale(frame1, from_=0, to=100,length=800, orient='horizontal',command=sl_p_ch)
     slider_p.set(3)
-    slider_p.grid(row=15, column=6,columnspan=8)
-    slP_ch_b=Button(frame1,text='P3.0',style='Wf.TButton', command=lambda:roast_state('P3.0')).grid(row=15,column=15)
+    slider_p.grid(row=19, column=3,columnspan=2)
+    slP_ch_b=Button(frame1,text='P3.0',style='Wf.TButton', command=lambda:roast_state('P3.0')).grid(row=19,column=5)
 
     #預計脫水結束時間
-    even_predryend = Label(frame1,text='Pre DryEnd Time', width = 16, background="white",foreground="red",font="Helvetica 10 bold").grid(row=16,column=5,pady=5,padx=5)
+    even_predryend = Label(frame1,text='Pre DryEnd Time', width = 16, background="white",foreground="red",font="Helvetica 10 bold").grid(row=17,column=0,pady=5,padx=5)
     even_predryend_l = Label(frame1, width = 10, background="pink",foreground="red",font="Helvetica 14 bold")
-    even_predryend_l.grid(row=16,column=6,pady=5,padx=5)
+    even_predryend_l.grid(row=17,column=1,pady=5,padx=5)
 
     #Logo插圖
     img = Image.open('coffee roast.jpg')
@@ -1987,25 +2121,25 @@ if __name__ == '__main__' :#主程式及使用者介面設定
     tk_img = ImageTk.PhotoImage(img)
     canvas_img = Canvas(frame1,width=img.size[0],height=img.size[1])#width=img.size[0],height=img.size[1]
     canvas_img.create_image(0, 0, anchor=NW, image=tk_img)#tk_img'nw'
-    canvas_img.grid(row=10,column=21,rowspan=7,columnspan=2,pady=5,padx=5)#,rowspan=15,columnspan=2
+    canvas_img.grid(row=8,column=8,rowspan=7,columnspan=2,pady=5,padx=5)#,rowspan=15,columnspan=2
     
     #艾格狀數預估
     f1_agtron_L = Label(frame1,text="豆表 Agtron 預估值",font="Keiu 14")#當下艾格狀數預估
-    f1_agtron_L.grid(row=17,column=21,columnspan=2,padx=5,pady=5)
+    f1_agtron_L.grid(row=17,column=8,columnspan=2,padx=5,pady=5)
     f1_agtron_L_S = Label(frame1,text="",foreground="red",font="Keiu 14")#FC 豆表 Agtron
-    f1_agtron_L_S.grid(row=18,column=21,columnspan=2,padx=5,pady=5)
+    f1_agtron_L_S.grid(row=18,column=9,columnspan=2,padx=5,pady=5)
 
     #滑鼠座標顯示
     canvas.bind("<Motion>",mouseMotion)
     mou_x_l = Label(frame1, width = 14,foreground="blue",font="Helvetica 11 bold")
-    mou_x_l.grid(row=0,column=0,pady=5,padx=5)
+    mou_x_l.grid(row=0,column=0,columnspan=2,pady=5,padx=5)
     
     #開始、結束按鈕
-    Button(frame1,text="開機",state=DISABLED, style='W.TButton').grid(row=2,column=0,padx=5,pady=5)    
-    Button(frame1,text="開使記錄",state=DISABLED, style='W.TButton').grid(row=4,column=0,padx=5,pady=5)    
-    Button(frame1,text='結束記錄',state=DISABLED, style='W.TButton',command=lambda:temp_ror(1)).grid(row=6,column=0,padx=5,pady=5)
-    Button(frame1,text="清除表格",state=DISABLED, style='W.TButton',command=clean_tree).grid(row=8,column=0,padx=5,pady=5)
-    Button(frame1,text="結束程式", style='W.TButton',command=root_t.destroy).grid(row=10,column=0,padx=5,pady=5)
+    Button(frame1,text="開機",state=DISABLED, style='W.TButton').grid(row=2,column=0,columnspan=2,padx=5,pady=5)    
+    Button(frame1,text="開使記錄",state=DISABLED, style='W.TButton').grid(row=3,column=0,columnspan=2,padx=5,pady=5)    
+    Button(frame1,text='結束記錄',state=DISABLED, style='W.TButton',command=lambda:temp_ror(1)).grid(row=4,column=0,columnspan=2,padx=5,pady=5)
+    Button(frame1,text="清除表格",state=DISABLED, style='W.TButton',command=clean_tree).grid(row=5,column=0,columnspan=2,padx=5,pady=5)
+    Button(frame1,text="結束程式", style='W.TButton',command=root_t.destroy).grid(row=6,column=0,columnspan=2,padx=5,pady=5)
   
     #*************** 第二個視窗-通訊參數 ***************
     frame2 = Frame (root_t, relief='solid', cursor='cross', borderwidth=2)
