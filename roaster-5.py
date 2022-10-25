@@ -252,7 +252,6 @@ def draw_panal():#重新產生畫布座標系統
 
         if k > 36 :
             canvas_event.create_line(k,10,k,110,width=1,fill='#fac', dash=(10,2)) 
-
     #階段
     dry_start = float(rostep_dry_start_E.get())#內定脫水起始溫度 
     dry_end = float(rostep_dry_end_E.get())#內定脫水結束溫度
@@ -264,7 +263,6 @@ def draw_panal():#重新產生畫布座標系統
     canvas.create_rectangle(36, (420-dry_start*1.6), 900, (420-dry_end*1.6),fill='lightgreen', stipple="gray25" )#脫水期activefill='lightgreen',activestipple="gray50"
     canvas.create_rectangle(36, (420-maillard_start*1.6), 900, (420-maillard_end*1.6),fill='#ff8000', stipple="gray25" )#梅納期skyblue
     canvas.create_rectangle(36, (420-development_start*1.6), 900, (420-development_end*1.6),fill='gray', stipple="gray25" )#發展期skyblue
-
     return 
 
 def draw_panal_ss(*sstype):#重新產生畫布座標系統__Frame6 全息烘焙
@@ -1399,7 +1397,7 @@ def sl_f_ch(source):#壓差計選擇設定
     roast_state(f_value)
     return 
     
-def sl_p_ch(source):#瓦斯壓力選擇設定
+def sl_p_ch(source):#瓦斯壓力選擇設定load_file_data
     #print(type(float(source)))
     sl_value = round(float(source),0)
     p_value = 'P'+str(sl_value)
@@ -1409,26 +1407,19 @@ def sl_p_ch(source):#瓦斯壓力選擇設定
     return
 
 def redraw_profile(roast_data_load,r_f):#歷史檔案曲線繪圖
-    #print(roast_data_load)
     root_redraw_profile = Tk()
     root_redraw_profile.title(r_f)
-    #root_redraw_profile.geometry("")
-
     screenwidth = root_redraw_profile.winfo_screenwidth()
     screenheight = root_redraw_profile.winfo_screenheight()
     w_win = 1500
     h_win = 780
     x_offset = (screenwidth - w_win) / 2
     y_offset = ((screenheight - h_win) / 2)# - 30
-
     root_redraw_profile.title("Shokunin Coffee Roaster")
     root_redraw_profile.geometry("%dx%d+%d-%d" %(w_win,h_win,x_offset,y_offset))#1520
     root_redraw_profile.configure(bg='lightgreen')
 
     ttk.Style().configure("Line.TSeparator", background="#ff0000")
-    #st_rrp = Style() #設定按鈕外觀
-    #st_rrp.configure('W.TButton', width = 12, background='green', foreground='blue', font=('Keiu', 14 ))
-
     canvas =Canvas(root_redraw_profile,width=1480,height=660,bg='#FEFEFE')#white
     canvas.grid(row=0,rowspan=11 ,column=0,columnspan=15,padx=5,pady=5)
 
@@ -1451,7 +1442,6 @@ def redraw_profile(roast_data_load,r_f):#歷史檔案曲線繪圖
     jup = 0    
     for k in range(100,1480,60):
         jup += 1
-        
         if jup == 5 or jup == 10 or jup == 15 or jup == 20 or jup == 25 :
             canvas.create_line(k,600,k,590,width=2,fill='red')
             canvas.create_text(k,620,text=str(jup),fill='blue')
@@ -1469,7 +1459,6 @@ def redraw_profile(roast_data_load,r_f):#歷史檔案曲線繪圖
     canvas.create_rectangle(40, (600-dry_start*2), 1420, (600-dry_end*2),fill='lightgreen', stipple="gray25" )#脫水期activefill='lightgreen',activestipple="gray50"
     canvas.create_rectangle(40, (600-maillard_start*2), 1420, (600-maillard_end*2),fill='#ff8000', stipple="gray25" )#梅納期skyblue
     canvas.create_rectangle(40, (600-development_start*2), 1420, (600-development_end*2),fill='gray', stipple="gray25" )#發展期skyblue
-
 
     #**********繪圖區段***********
     time_data = []
@@ -1647,17 +1636,18 @@ def redraw_profile(roast_data_load,r_f):#歷史檔案曲線繪圖
     root_redraw_profile.mainloop()
     return
 
-def load_roast_data(filetype):#載入檔案
+def load_file_data(filetype):#載入檔案
     inputfile = []
-    root_roast_f = Tk()
-    root_roast_f.title("檔案選擇")
-    root_roast_f.geometry("800x100")
+    root_ldf = Tk()
+    
+    root_ldf.geometry("800x100")
     var=StringVar()
-    select_roast_file_cb = Combobox(root_roast_f,width=60,textvariable=var,font="Keiu 14")#_bytesize
+    select_roast_file_cb = Combobox(root_ldf,width=60,textvariable=var,font="Keiu 14")#_bytesize
     select_roast_file_cb.grid(row=0,column=1,columnspan=4,pady=5,padx=5)
 
     if filetype == 1 or filetype ==2 :#載入歷史檔案
-
+        #1:選擇已存資料  2:產生紀錄表
+        root_ldf.title("歷史檔案選擇")
         for dirpath , dirnames, filenames in os.walk(os.getcwd()):
             for f in filenames:
                 if f.split('.')[-1] == 'rxt' :#f
@@ -1666,9 +1656,9 @@ def load_roast_data(filetype):#載入檔案
         select_roast_file_cb["value"] = inputfile
         r_f = select_roast_file_cb
 
-        Button(root_roast_f,text="選擇檔案", style='W.TButton',command=lambda:argument_setup(4,r_f,filetype)).grid(row=0,column=8,padx=5,pady=5)
-        Button(root_roast_f,text="確定", style='W.TButton',command=root_roast_f.destroy).grid(row=1,column=8,padx=5,pady=5)
+        Button(root_ldf,text="選擇檔案", style='W.TButton',command=lambda:argument_setup(4,r_f,filetype)).grid(row=0,column=8,padx=5,pady=5)
     elif filetype == 3 :#選擇已存通訊參數檔案
+        root_ldf.title("檔案通訊參數選擇")
         for dirpath , dirnames, filenames in os.walk(os.getcwd()):
             for f in filenames:
                 if f.split('.')[-1] == 'arg' :
@@ -1676,11 +1666,23 @@ def load_roast_data(filetype):#載入檔案
   
         select_roast_file_cb["value"] = inputfile
         r_f = select_roast_file_cb
+        Button(root_ldf,text="選擇檔案", style='W.TButton',command=lambda:argument_setup(3,r_f)).grid(row=0,column=8,padx=5,pady=5)
+    elif filetype == 6 :#選擇Artisan 的.alog 檔案
+        #將檔名傳入至argument_setup(6,r_f_as)
+        #再將格式轉為rxt
+        root_ldf.title("Artisan檔案選擇")
+        for dirpath , dirnames, filenames in os.walk(os.getcwd()):
+            for f in filenames:
+                if f.split('.')[-1] == 'alog' :
+                    inputfile.append(f)#os.path.join(dirpath,f)
+  
+        select_roast_file_cb["value"] = inputfile
+        r_f = select_roast_file_cb
+        Button(root_ldf,text="選擇檔案", style='W.TButton',command=lambda:argument_setup(6,r_f)).grid(row=0,column=8,padx=5,pady=5)
 
-        Button(root_roast_f,text="選擇檔案", style='W.TButton',command=lambda:argument_setup(3,r_f)).grid(row=0,column=8,padx=5,pady=5)
-        Button(root_roast_f,text="確定", style='W.TButton',command=root_roast_f.destroy).grid(row=1,column=8,padx=5,pady=5)
+    Button(root_ldf,text="確定", style='W.TButton',command=root_ldf.destroy).grid(row=1,column=8,padx=5,pady=5)
 
-    root_roast_f.mainloop()
+    root_ldf.mainloop()
     return
 
 def mouseMotion(event): #顯示滑鼠座標位置的時間溫度值
@@ -1699,7 +1701,6 @@ def mouseMotion(event): #顯示滑鼠座標位置的時間溫度值
     return
   
 def frame3_modu():  #設備參數參考資料
-    
     #參數標頭
     paramater_c1_l = Label(frame3, width = 12, background="white",foreground="blue",font="Helvetica 14 bold")
     paramater_c1_l.grid(row=23,column=1,pady=5,padx=5)
@@ -1781,7 +1782,6 @@ def frame3_modu():  #設備參數參考資料
     BBBBB_rs_l = Label(frame3, width = 12, background="lightgreen",foreground="red",font="Helvetica 14 bold")
     BBBBB_rs_l.grid(row=33,column=3,pady=5,padx=5)
     BBBBB_rs_l.config(text='nnnn')
-
     return
 
 def frame4_modu():  #烘豆手法選擇
@@ -1844,7 +1844,6 @@ def frame4_modu():  #烘豆手法選擇
     rostype_sn_text.insert(END,"3.重視風門的操作，認為是烘焙過程中的首要條件，也是決定烘焙成果優劣的關鍵。\n")
     rostype_sn_text.insert(END,"4.醇厚度、甜味、苦味的均衡。利於保存，風味衰敗速度慢。\n")
     rostype_sn_text.insert(END,"\n")
-    rostype_sn_text.insert(END,"\n")
 
     #全息烘焙法
     rostype_ss_text= Text(frame4,height=15,width=65, foreground='green',font="Keiu 16")
@@ -1856,8 +1855,6 @@ def frame4_modu():  #烘豆手法選擇
     rostype_ss_text.insert(END,"第三階段:大理石紋至一爆(豆表進入到玻璃態)\n")
     rostype_ss_text.insert(END,"    大理石紋:約175 ~ 190°C\n")
     rostype_ss_text.insert(END,"第四階段:一爆至出鍋。\n")
-    rostype_ss_text.insert(END,"\n")
-    rostype_ss_text.insert(END,"\n")
     rostype_ss_text.insert(END,"\n")
 
     return
@@ -1988,32 +1985,6 @@ def artisan_format(roast_data_load,r_f):#將rxt檔案轉成csv格式
 
             f.write(time1_data+"	"+time2_data+"	"+w_artisan_ET[h]+"	"+w_artisan_BT[h]+"	"+w_artisan_Event[h])#+"\n"
     messagebox.showinfo('OK', '轉換完成檔名為'+r_f +'.csv')
-    return
-
-def read_artisan():#選擇Artisan 的.alog 檔案
-    #將檔名傳入至argument_setup(6,r_f_as)
-    #再將格式轉為rxt
-    inputfile = []
-    root_artisan_f = Tk()
-    root_artisan_f.title("Artisan檔案選擇")
-    root_artisan_f.geometry("800x100")
-
-    var=StringVar()
-    select_artisan_file_cb = Combobox(root_artisan_f,width=60,textvariable=var,font="Keiu 14")#_bytesize
-    select_artisan_file_cb.grid(row=0,column=1,columnspan=4,pady=5,padx=5)
-
-    for dirpath , dirnames, filenames in os.walk(os.getcwd()):
-        for f in filenames:
-            if f.split('.')[-1] == 'alog' :
-                inputfile.append(f)#os.path.join(dirpath,f)
-
-    select_artisan_file_cb["value"] = inputfile
-    r_f_as = select_artisan_file_cb
-
-    Button(root_artisan_f,text="選擇檔案", style='W.TButton',command=lambda:argument_setup(6,r_f_as)).grid(row=0,column=8,padx=5,pady=5)
-    Button(root_artisan_f,text="確定", style='W.TButton',command=root_artisan_f.destroy).grid(row=1,column=8,padx=5,pady=5)
-
-    root_artisan_f.mainloop()
     return
 
 def record_table(roast_data_load,r_f): #轉成烘焙紀錄表
@@ -2406,10 +2377,8 @@ if __name__ == '__main__' :#主程式及使用者介面設定
 
     line = ttk.Separator(frame2, orient=VERTICAL, style="Line.TSeparator").grid(column=8, row=0, rowspan=14,padx=5,pady=5, sticky='ns')
 
-    #btn_4 = Button(frame2,text='選擇檔案', style='W1.TButton',command=lambda:select_file())
-    btn_4 = Button(frame2,text='選擇檔案', style='W1.TButton',command=lambda:load_roast_data(3))
-
-    btn_4.grid(row=0,column=10,padx=5,pady=5)#load_roast_data(2)
+    btn_4 = Button(frame2,text='選擇檔案', style='W1.TButton',command=lambda:load_file_data(3))
+    btn_4.grid(row=0,column=10,padx=5,pady=5)
 
     select_file_E = Entry(frame2,width=20,font="Keiu 14")
     select_file_E.grid(row=0,column=12,padx=5,pady=5)
@@ -2703,7 +2672,6 @@ if __name__ == '__main__' :#主程式及使用者介面設定
     Button(frame3,text="回BT & RoR", style='W.TButton',command=lambda:notebook.select(0)).grid(row=35,column=1,padx=5,pady=5)    
     Button(frame3,text="結束程式", style='W.TButton',command=root_t.destroy).grid(row=35,column=3,padx=5,pady=5)
 
-    #'''
     #*************** 第四個視窗-烘豆手法 ***************
     frame4 = Frame (root_t, relief=GROOVE, borderwidth=2)
     frame4.pack(side=BOTTOM, fill='both', ipadx="1c", ipady="1c", expand=1)
@@ -2713,12 +2681,11 @@ if __name__ == '__main__' :#主程式及使用者介面設定
     #*************** 第五個視窗-烘豆紀錄表 ***************
     frame5 = Frame (root_t, relief=GROOVE, borderwidth=2)
     frame5.pack(side=TOP, fill='both', ipadx="1c", ipady="1c", expand=1)
-    #'''
     #********************* 資料記錄表格 ******************
     style_value = ttk.Style()
     style_value.configure("Treeview",background='lightgreen',foreground='blue',rowheight=30,font=("keui",14))#,foreground='blue'
     tree = Treeview(frame5,column=("item","BT (°C)","BT RoR","ET (°C)","ET RoR","時間(分)","事件"), show = 'headings', height=30, selectmode='browse')#
-    #'''
+
     yscrollbar =Scrollbar(tree)
     yscrollbar.config( orient="vertical",command=tree.yview)    
     yscrollbar.pack(side='right',fill='y')
@@ -2864,9 +2831,9 @@ if __name__ == '__main__' :#主程式及使用者介面設定
     cb_cupping_E.grid(row=8,column=21,padx=5,pady=5)
     #gb_cupping_E.insert(0,'柑橘調性')#內定杯測風味 
 
-    Button(frame5,text="選擇已存資料",style='W3.TButton', command=lambda:load_roast_data(1)).grid(row=11,column=10,padx=10,pady=10)#,columnspan=17
-    Button(frame5,text="讀Artisan檔案",style='W3.TButton', command=read_artisan).grid(row=11,column=12,padx=10,pady=10)
-    Button(frame5,text="產生紀錄表",state='',style='W3.TButton', command=lambda:load_roast_data(2)).grid(row=11,column=14,padx=10,pady=10)
+    Button(frame5,text="選擇已存資料",style='W3.TButton', command=lambda:load_file_data(1)).grid(row=11,column=10,padx=10,pady=10)#,columnspan=17
+    Button(frame5,text="讀Artisan檔案",style='W3.TButton', command=lambda:load_file_data(6)).grid(row=11,column=12,padx=10,pady=10)
+    Button(frame5,text="產生紀錄表",state='',style='W3.TButton', command=lambda:load_file_data(2)).grid(row=11,column=14,padx=10,pady=10)
     Button(frame5,text="設備參數位址",state=DISABLED,style='W3.TButton', command=lambda:notebook.select(3)).grid(row=11,column=16,padx=10,pady=10)
     #*************** 第五個視窗-烘豆紀錄表 End ***************
 
@@ -2876,7 +2843,6 @@ if __name__ == '__main__' :#主程式及使用者介面設定
 
     canvas_ss =Canvas(frame6, width=940, height=460, bg='white')
     canvas_ss.grid(row=2, rowspan=13 ,column=2, columnspan=17, padx=5, pady=5)
-    #draw_panal_ss()#產生座標軸
 
     fc_agtron_L = Label(frame6,text="FC 豆表 Agtron",font="Keiu 16")#一爆時的艾格狀數
     fc_agtron_L.grid(row=15,column=1,padx=5,pady=5)
@@ -2910,8 +2876,6 @@ if __name__ == '__main__' :#主程式及使用者介面設定
     notebook.pack(padx=10,pady=10,fill=BOTH,expand=TRUE)
  
     root_t.mainloop()
-
-
 
 ####----------    測試用程式碼    ----------####
     '''
