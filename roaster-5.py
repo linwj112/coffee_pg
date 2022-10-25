@@ -10,8 +10,8 @@ from tkinter import messagebox
 import os
 from PIL import Image, ImageTk
 from numpy import var
+import openpyxl
 #import threading
-
 
 def rtime(*args):#烘豆程式的計時器
     rt1 = args[0]   #傳入開機或入豆時間做為總烘豆時數的起點
@@ -35,7 +35,7 @@ def roast_state(state_r): # 設定烘焙階段
         bt_charge.config(state=DISABLED)#入豆
     elif state_r =='TP':
         bt_tp.config(state=DISABLED)#回溫點
-    elif state_r =='DRYE':
+    elif state_r =='DRYe':
         bt_drye.config(state=DISABLED)#脫水結束
     elif state_r =='GDp':
         bt_gdp.config(state=DISABLED)#金黃點
@@ -56,15 +56,12 @@ def save_data(time_data,bt_temperature_data,ror_bt_data,et_temperature_data,ror_
     filename = filename_E.get() #檔名
     #print(bt_temperature_data)
     i = 0
-    '''
-    #將TreeView中的資料寫入檔案中
-    tree_item ='I001'
     with open( filename +'.rxt','w') as f:
         f.write(roastdate_E.get())  #烘焙日期
         f.write('\n')
         f.write(prodname_E.get())   #產品名稱
         f.write('\n')
-        f.write(gb_area_E.get())   #生豆產地
+        f.write(gb_method_E.get())   #生豆處理法
         f.write('\n')
         f.write(gb_name_E.get())   #生豆名稱
         f.write('\n')
@@ -84,45 +81,15 @@ def save_data(time_data,bt_temperature_data,ror_bt_data,et_temperature_data,ror_
         f.write('\n')
         f.write(weather_E.get())   #天氣溫度
         f.write('\n')
-
-        while tree.exists(tree_item):#:next(tree.item)!= '',,tree.exists(tree_item)
-            i += 1
-            try:
-                td_1,td_2,td_3,td_4,td_5,td_6 = tree.item(tree_item,option='values')
-                #td_0:項次  td_1:豆溫  td_2:豆溫ROR  td_3:環境溫  td_4:環境溫ROR  td_5:烘豆時間  td_6:事件
-                td_0 = i
-                f.write(td_0+':'+td_1+':'+td_2+':'+td_3+':'+td_4+':'+td_5+':'+td_6+'\n')
-                #print(tree.item(tree_item,option='values')[0],tree.item(tree_item,option='values')[1])    
-                tree_item = tree.next(tree_item)
-            except:
-                print("存檔完成")
-                break
-    '''
-    #'''
-    with open( filename +'.rxt','w') as f:
-        f.write(roastdate_E.get())  #烘焙日期
+        f.write(cb_weight_E.get())   #熟豆重量
         f.write('\n')
-        f.write(prodname_E.get())   #產品名稱
+        f.write(loss_weight_E.get())   #失重率
         f.write('\n')
-        f.write(gb_area_E.get())   #生豆產地
+        f.write(cb_barg_E.get())   #豆表色度
         f.write('\n')
-        f.write(gb_name_E.get())   #生豆名稱
+        f.write(cb_parg_E.get())   #豆粉色度
         f.write('\n')
-        f.write(gb_moisture_E.get())   #水分含量
-        f.write('\n')
-        f.write(gb_density_E.get())   #生豆密度
-        f.write('\n')
-        f.write(gb_weight_E.get())   #批次重量
-        f.write('\n')
-        f.write(machine_name_E.get())   #設備名稱
-        f.write('\n')
-        f.write(content_E.get())   #設備容量
-        f.write('\n')
-        f.write(energy_E.get())   #使用能源
-        f.write('\n')
-        f.write(operator_E.get())   #操作人員
-        f.write('\n')
-        f.write(weather_E.get())   #天氣溫度
+        f.write(cb_cupping_E.get())   #杯測風味
         f.write('\n')
 
         for i in range(len(time_data)-1):   #存檔順序 序號 :豆溫:豆溫ror:環境溫:環境溫ror:入風溫:時間:事件
@@ -152,7 +119,6 @@ def save_data(time_data,bt_temperature_data,ror_bt_data,et_temperature_data,ror_
             messagebox.showinfo('information', '資料不齊全，無法計算階段百分比')
         #else:
         messagebox.showinfo('information', '存檔完成')
-    #'''
     return            
 
 def clean_tree():#清除Tree資料表、資料欄位及相關按鈕復歸
@@ -251,15 +217,28 @@ def draw_panal():#重新產生畫布座標系統
 
     #********** 事件座標軸 **********
     canvas_event.delete("all")    #清除事件繪圖畫面
-    #事件座標Y軸
+    #事件座標Y1軸
     canvas_event.create_line(36,10,36,120,width=2,fill='blue')#Y 第一座標軸    
-    for i in range(10,110,10):
+    for i in range(10,110,20):
         canvas_event.create_line(36,i,46,i,width=2,fill='red')
-        if i % 50 == 10:
-            canvas_event.create_text(20,i,text=str((11-(i // 10))*10),fill='blue')
+        if i % 20 == 10:
+            canvas_event.create_text(20,i,text=str((11-(i // 10))*5),fill='blue')
         if i > 10 :
             canvas_event.create_line(47,i,900,i,width=1,fill='#fac', dash=(10,2))
     canvas_event.create_text(20,110,text='0',fill='blue')
+    canvas_event.create_text(36,122,text='壓差',fill='blue')
+
+    #事件座標Y2軸
+    canvas_event.create_line(900,10,900,120,width=2,fill='blue')#Y 第一座標軸    
+    for i in range(10,110,20):
+        canvas_event.create_line(900,i,890,i,width=2,fill='red')
+        if i % 40 == 10:
+            canvas_event.create_text(920,i,text=str((11-(i // 10))*2.5),fill='red')
+        if i > 10 :
+            canvas_event.create_line(920,i,900,i,width=1,fill='#fac', dash=(10,2))
+    canvas_event.create_text(920,110,text='0',fill='red')
+    canvas_event.create_text(900,122,text='瓦斯',fill='red')
+
     #事件X座標軸
     canvas_event.create_line(36,110,900,110,width=2,fill='green')#X 時間軸    
     jup = 0    
@@ -344,11 +323,17 @@ def draw_panal_ss(*sstype):#重新產生畫布座標系統__Frame6 全息烘焙
 
     elif sstype[0] == 4:#繪製全息烘焙的預估底圖
         typess_no = 4
+        t1=5.0 #t1時間
+        t2=9.5 #t2時間
+        tf=11 #FCs時間
+        td=15 #Drop時間
         #print(sstype)
-        canvas_ss.create_rectangle(66, (420-70*1.6), 115, (420-90*1.6),fill='lightgreen', stipple="gray50" )#回溫點範圍
-        canvas_ss.create_rectangle(115, (420-90*1.6), 126, (420-100*1.6),fill='blue', stipple="gray50" )#T0點範圍
-        canvas_ss.create_rectangle(141, (420-110*1.6), 171, (420-120*1.6),fill='#ff8000', stipple="gray50" )#T1點範圍
-        canvas_ss.create_rectangle(351, (420-170*1.6), 381, (420-190*1.6),fill='red', stipple="gray50" )#T2點範圍
+        canvas_ss.create_rectangle(66, (420-0*1.6), (66+t1*30), (420-230*1.6),fill='lightgreen', stipple="gray12" )#回溫點範圍
+        canvas_ss.create_rectangle((66+t1*30), (420-0*1.6), (66+t2*30), (420-230*1.6),fill='blue', stipple="gray12" )#T0點範圍
+        canvas_ss.create_rectangle((66+t2*30), (420-0*1.6), (66+tf*30), (420-230*1.6),fill='#ff8000', stipple="gray12" )#T1點範圍
+        canvas_ss.create_rectangle((66+tf*30), (420-0*1.6), (66+td*30), (420-230*1.6),fill='red', stipple="gray12" )#T2點範圍
+        #T0、T1、T2、FCs起始線
+
     else:
         typess_no = 0
         #print("未選擇烘焙法")
@@ -890,9 +875,9 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
             ep_y_0 = ep_y_1[-1]
             ef_y_0 = ef_y_1[-1]
             if temp_state[0] == 'P':
-                ep_y_1.append(round(float(slider_p.get()),0))
+                ep_y_1.append(round(float(slider_p.get())*4,0))
             if temp_state[0] == 'F':
-                ef_y_1.append(round(float(slider.get()),0))
+                ef_y_1.append(round(float(slider.get())*2,0))
         #******* 壓差計及瓦斯壓力 End *******
 
         state_sc = state_a #將事件轉成紀錄用變數
@@ -1028,10 +1013,8 @@ def temp_ror(state_arg):#主程式_溫度擷取及烘豆階段紀錄
         msg_save = messagebox.askyesnocancel('Messagebox','是否存檔或取消?')
         if msg_save == True :
             save_data(time_data,bt_temperature_data,ror_bt_data,et_temperature_data,ror_et_data,entry_temperature_data,event_data,step_data)
-            #Button(frame1,text='結束記錄',state=DISABLED, style='W.TButton',command=lambda:temp_ror(1)).grid(row=4,column=0,columnspan=2,padx=5,pady=5)
             bt_recorde.config(state=DISABLED)
         elif msg_save == False :
-            #Button(frame1,text='結束記錄',state=DISABLED, style='W.TButton',command=lambda:temp_ror(1)).grid(row=4,column=0,columnspan=2,padx=5,pady=5)
             bt_recorde.config(state=DISABLED)
     return 1
 
@@ -1095,7 +1078,6 @@ def argument_setup(*args) -> None: #通訊參數設定儲存
             for arg in comm_args:
                 f.write(arg)
                 f.write('\n')
-
         #print(comm_args)
         messagebox.showinfo('information', '存檔完成')
     elif args[0] == 3:#由檔案寫入frame2
@@ -1142,16 +1124,17 @@ def argument_setup(*args) -> None: #通訊參數設定儲存
        
         notebook.select(1)
     elif args[0] == 4:#由檔案讀入已存在烘豆資料
-        #print('if  ',args[1])
         roast_data_load =[]
         r_f=args[1].get()
         with open( r_f,'r') as f: 
             for roast_load in f.readlines() :
                 roast_data_load.append(roast_load)
-        redraw_profile(roast_data_load,r_f)
+        if args[2] == 1 :
+            redraw_profile(roast_data_load,r_f) #呼叫歷史檔案曲線繪圖模組
+        elif args[2] == 2 : #呼叫轉成烘焙紀錄表模組
+            record_table(roast_data_load,r_f)
     elif args[0] == 5:#測試連線參數是否正確可以讀到控制器的數值
         try:
-            #'''
             #********** 讀取通訊參數初始值 *********
             port = port_E.get() #通信端口
             mode_E_a = mode_E.get() #通訊類型    
@@ -1259,7 +1242,6 @@ def argument_setup(*args) -> None: #通訊參數設定儲存
                 messagebox.showinfo('測試結果', msgtxt)
                 #Button(frame1,text="開機", style='W.TButton',command=lambda:temp_ror('0')).grid(row=2,column=0,columnspan=2,padx=5,pady=5)    
                 bt_openmc.config(state='')
-            #'''
         except: #Exception
             messagebox.showinfo('通訊參數測試訊息', '不知道怎麼了，反正發生錯誤惹')
     elif args[0] == 6:#讀取Artisan檔案
@@ -1426,35 +1408,22 @@ def sl_p_ch(source):#瓦斯壓力選擇設定
     #print(slider_p.get())
     return
 
-def select_file():#選擇已存通訊參數檔案
-    inputfile = []
-    root_f = Tk()
-    root_f.title("參數檔案選擇")
-    root_f.geometry("400x100")
-
-    select_file_cb = Combobox(root_f,width=15,textvariable=var_bytesize,font="Keiu 14")#
-    select_file_cb.grid(row=0,column=1,pady=5,padx=5)
-
-    for dirpath , dirnames, filenames in os.walk(os.getcwd()):
-        for f in filenames:
-            if f.split('.')[-1] == 'arg' :
-                inputfile.append(f)#os.path.join(dirpath,f)
-  
-    select_file_cb["value"] = inputfile
-    #select_file_cb.current(0)    
-    s_f = select_file_cb
-
-    Button(root_f,text="選擇檔案", style='W.TButton',command=lambda:argument_setup(3,s_f)).grid(row=0,column=8,padx=5,pady=5)
-    Button(root_f,text="確定", style='W.TButton',command=root_f.destroy).grid(row=1,column=8,padx=5,pady=5)
-
-    root_f.mainloop()
-    return
-
 def redraw_profile(roast_data_load,r_f):#歷史檔案曲線繪圖
     #print(roast_data_load)
     root_redraw_profile = Tk()
     root_redraw_profile.title(r_f)
-    root_redraw_profile.geometry("")
+    #root_redraw_profile.geometry("")
+
+    screenwidth = root_redraw_profile.winfo_screenwidth()
+    screenheight = root_redraw_profile.winfo_screenheight()
+    w_win = 1500
+    h_win = 780
+    x_offset = (screenwidth - w_win) / 2
+    y_offset = ((screenheight - h_win) / 2)# - 30
+
+    root_redraw_profile.title("Shokunin Coffee Roaster")
+    root_redraw_profile.geometry("%dx%d+%d-%d" %(w_win,h_win,x_offset,y_offset))#1520
+    root_redraw_profile.configure(bg='lightgreen')
 
     ttk.Style().configure("Line.TSeparator", background="#ff0000")
     #st_rrp = Style() #設定按鈕外觀
@@ -1497,9 +1466,9 @@ def redraw_profile(roast_data_load,r_f):#歷史檔案曲線繪圖
     development_start = float(rostep_development_start_E.get())#內定完成起始溫度
     development_end = float(rostep_development_end_E.get())#內定完成結束溫度
 
-    canvas.create_rectangle(40, (600-dry_start*2), 1420, (600-dry_end*2),fill='lightgreen', stipple="gray50" )#脫水期activefill='lightgreen',activestipple="gray50"
-    canvas.create_rectangle(40, (600-maillard_start*2), 1420, (600-maillard_end*2),fill='#ff8000', stipple="gray50" )#梅納期skyblue
-    canvas.create_rectangle(40, (600-development_start*2), 1420, (600-development_end*2),fill='gray', stipple="gray50" )#發展期skyblue
+    canvas.create_rectangle(40, (600-dry_start*2), 1420, (600-dry_end*2),fill='lightgreen', stipple="gray25" )#脫水期activefill='lightgreen',activestipple="gray50"
+    canvas.create_rectangle(40, (600-maillard_start*2), 1420, (600-maillard_end*2),fill='#ff8000', stipple="gray25" )#梅納期skyblue
+    canvas.create_rectangle(40, (600-development_start*2), 1420, (600-development_end*2),fill='gray', stipple="gray25" )#發展期skyblue
 
 
     #**********繪圖區段***********
@@ -1511,7 +1480,7 @@ def redraw_profile(roast_data_load,r_f):#歷史檔案曲線繪圖
     entry_temperature_data =[]
     event_data = []
     step_data = []    
-    for i in range(12,len(roast_data_load)-3):
+    for i in range(17,len(roast_data_load)-3):
         reda = roast_data_load[i].split(':')
         #print(reda)
         bt_temperature_data.append(float(reda[1])*2)
@@ -1574,11 +1543,11 @@ def redraw_profile(roast_data_load,r_f):#歷史檔案曲線繪圖
     re_greenbean_inf_L = Label(root_redraw_profile,text="生豆資訊 : ",font="Keiu 10")#生豆資訊
     re_greenbean_inf_L.grid(row=13,column=0,padx=5,pady=5)
 
-    re_gb_area_L = Label(root_redraw_profile,text="生豆產地",font="Keiu 10")#生豆產地
+    re_gb_area_L = Label(root_redraw_profile,text="生豆處理法",font="Keiu 10")#生豆處理法
     re_gb_area_L.grid(row=13,column=1,padx=5,pady=5)
     re_gb_area_E = Entry(root_redraw_profile,width=20,font="Keiu 10")
     re_gb_area_E.grid(row=13,column=2,padx=5,pady=5)
-    re_gb_area_E.insert(0,roast_data_load[2])#內定產地名稱 
+    re_gb_area_E.insert(0,roast_data_load[2])#內定處理法 
        
     re_gb_name_L = Label(root_redraw_profile,text="生豆名稱",font="Keiu 10")#生豆名稱
     re_gb_name_L.grid(row=13,column=3,padx=5,pady=5)
@@ -1636,6 +1605,37 @@ def redraw_profile(roast_data_load,r_f):#歷史檔案曲線繪圖
     re_weather_E = Entry(root_redraw_profile,width=20,font="Keiu 10")
     re_weather_E.grid(row=14,column=10,padx=5,pady=5)
     re_weather_E.insert(0,roast_data_load[11])#內定天氣溫度
+
+    re_cb_weight_L = Label(root_redraw_profile,text="熟豆重量",font="Keiu 10")#熟豆重量
+    re_cb_weight_L.grid(row=15,column=1,padx=5,pady=5)
+    re_cb_weight_E = Entry(root_redraw_profile,width=20,font="Keiu 10")
+    re_cb_weight_E.grid(row=15,column=2,padx=5,pady=5)
+    re_cb_weight_E.insert(0,roast_data_load[12])#內定熟豆重量
+
+    re_loss_weight_L = Label(root_redraw_profile,text="失重率",font="Keiu 10")#失重率
+    re_loss_weight_L.grid(row=15,column=3,padx=5,pady=5)
+    re_loss_weight_E = Entry(root_redraw_profile,width=20,font="Keiu 10")
+    re_loss_weight_E.grid(row=15,column=4,padx=5,pady=5)
+    re_loss_weight_E.insert(0,roast_data_load[13])#內定失重率
+
+    re_cb_barg_L = Label(root_redraw_profile,text="豆表色度",font="Keiu 10")#豆表色度
+    re_cb_barg_L.grid(row=15,column=5,padx=5,pady=5)
+    re_cb_barg_E = Entry(root_redraw_profile,width=20,font="Keiu 10")
+    re_cb_barg_E.grid(row=15,column=6,padx=5,pady=5)
+    re_cb_barg_E.insert(0,roast_data_load[14])#內定豆表色度
+
+    re_cb_parg_L = Label(root_redraw_profile,text="豆粉色度",font="Keiu 10")#豆粉色度
+    re_cb_parg_L.grid(row=15,column=7,padx=5,pady=5)
+    re_cb_parg_E = Entry(root_redraw_profile,width=20,font="Keiu 10")
+    re_cb_parg_E.grid(row=15,column=8,padx=5,pady=5)
+    re_cb_parg_E.insert(0,roast_data_load[15])#內定豆粉色度
+
+    re_cb_cupping_L = Label(root_redraw_profile,text="杯測風味",font="Keiu 10")#風味
+    re_cb_cupping_L.grid(row=15,column=9,padx=5,pady=5)
+    re_cb_cupping_E = Entry(root_redraw_profile,width=20,font="Keiu 10")
+    re_cb_cupping_E.grid(row=15,column=10,padx=5,pady=5)
+    re_cb_cupping_E.insert(0,roast_data_load[16])#內定風味
+
     #********** 相關資訊區段 End ***********
 
     re_su = Button(root_redraw_profile,text="確定",command=root_redraw_profile.destroy)
@@ -1647,26 +1647,38 @@ def redraw_profile(roast_data_load,r_f):#歷史檔案曲線繪圖
     root_redraw_profile.mainloop()
     return
 
-def load_roast_data():#載入歷史檔案
+def load_roast_data(filetype):#載入檔案
     inputfile = []
     root_roast_f = Tk()
-    root_roast_f.title("歷史檔案選擇")
+    root_roast_f.title("檔案選擇")
     root_roast_f.geometry("800x100")
-
     var=StringVar()
     select_roast_file_cb = Combobox(root_roast_f,width=60,textvariable=var,font="Keiu 14")#_bytesize
     select_roast_file_cb.grid(row=0,column=1,columnspan=4,pady=5,padx=5)
 
-    for dirpath , dirnames, filenames in os.walk(os.getcwd()):
-        for f in filenames:
-            if f.split('.')[-1] == 'rxt' :#f
-                inputfile.append(os.path.join(dirpath,f))#os.path.join(dirpath,f)
+    if filetype == 1 or filetype ==2 :#載入歷史檔案
 
-    select_roast_file_cb["value"] = inputfile
-    r_f = select_roast_file_cb
+        for dirpath , dirnames, filenames in os.walk(os.getcwd()):
+            for f in filenames:
+                if f.split('.')[-1] == 'rxt' :#f
+                   inputfile.append(os.path.join(dirpath,f))#os.path.join(dirpath,f)
 
-    Button(root_roast_f,text="選擇檔案", style='W.TButton',command=lambda:argument_setup(4,r_f)).grid(row=0,column=8,padx=5,pady=5)
-    Button(root_roast_f,text="確定", style='W.TButton',command=root_roast_f.destroy).grid(row=1,column=8,padx=5,pady=5)
+        select_roast_file_cb["value"] = inputfile
+        r_f = select_roast_file_cb
+
+        Button(root_roast_f,text="選擇檔案", style='W.TButton',command=lambda:argument_setup(4,r_f,filetype)).grid(row=0,column=8,padx=5,pady=5)
+        Button(root_roast_f,text="確定", style='W.TButton',command=root_roast_f.destroy).grid(row=1,column=8,padx=5,pady=5)
+    elif filetype == 3 :#選擇已存通訊參數檔案
+        for dirpath , dirnames, filenames in os.walk(os.getcwd()):
+            for f in filenames:
+                if f.split('.')[-1] == 'arg' :
+                    inputfile.append(f)#os.path.join(dirpath,f)
+  
+        select_roast_file_cb["value"] = inputfile
+        r_f = select_roast_file_cb
+
+        Button(root_roast_f,text="選擇檔案", style='W.TButton',command=lambda:argument_setup(3,r_f)).grid(row=0,column=8,padx=5,pady=5)
+        Button(root_roast_f,text="確定", style='W.TButton',command=root_roast_f.destroy).grid(row=1,column=8,padx=5,pady=5)
 
     root_roast_f.mainloop()
     return
@@ -1837,13 +1849,13 @@ def frame4_modu():  #烘豆手法選擇
     #全息烘焙法
     rostype_ss_text= Text(frame4,height=15,width=65, foreground='green',font="Keiu 16")
     rostype_ss_text.grid(row=17,column=15,columnspan=14,padx=5,pady=5)
-    rostype_ss_text.insert(END,"\n")
-    rostype_ss_text.insert(END,"\n")
-    rostype_ss_text.insert(END,"\n")
-    rostype_ss_text.insert(END,"\n")
-    rostype_ss_text.insert(END,"\n")
-    rostype_ss_text.insert(END,"\n")
-    rostype_ss_text.insert(END,"\n")
+    rostype_ss_text.insert(END,"第一階段:入豆到 T0 - T1 (玻璃態)\n")
+    rostype_ss_text.insert(END,"    T0:豆表溫約在110°C\n")
+    rostype_ss_text.insert(END,"第二階段:T1 至大理石紋 (橡膠態)\n")
+    rostype_ss_text.insert(END,"    T1:約135 ~ 145°C\n")
+    rostype_ss_text.insert(END,"第三階段:大理石紋至一爆(豆表進入到玻璃態)\n")
+    rostype_ss_text.insert(END,"    大理石紋:約175 ~ 190°C\n")
+    rostype_ss_text.insert(END,"第四階段:一爆至出鍋。\n")
     rostype_ss_text.insert(END,"\n")
     rostype_ss_text.insert(END,"\n")
     rostype_ss_text.insert(END,"\n")
@@ -1872,7 +1884,7 @@ def artisan_format(roast_data_load,r_f):#將rxt檔案轉成csv格式
     artisan_date = roast_data_load[0][-3:-1]+'.'+roast_data_load[0][-6:-4]+'.'+roast_data_load[0][0:4]
     #print (artisan_date)
     #判斷事件的時間點並格式化時間且轉成Artisan支援的CSV檔案格式
-    for k in range(12,len(roast_data_load)-3):
+    for k in range(17,len(roast_data_load)-3):
         reda = roast_data_load[k].split(':')
         if reda[7] == "CHARGE\n" :
             min_s = float(reda[6]) // 60
@@ -1938,7 +1950,6 @@ def artisan_format(roast_data_load,r_f):#將rxt檔案轉成csv格式
         w_artisan_BT.append(reda[1])
         w_artisan_Event.append(w_Event)
         w_Event = ""
-        
 
     artisan_COOL = ''
     min_s = float(reda[6]) // 60
@@ -2003,6 +2014,105 @@ def read_artisan():#選擇Artisan 的.alog 檔案
     Button(root_artisan_f,text="確定", style='W.TButton',command=root_artisan_f.destroy).grid(row=1,column=8,padx=5,pady=5)
 
     root_artisan_f.mainloop()
+    return
+
+def record_table(roast_data_load,r_f): #轉成烘焙紀錄表
+
+    time_data = []
+    bt_temperature_data =[]
+    ror_bt = []
+    et_temperature_data =[]
+    ror_et = []
+    entry_temperature_data =[]
+    event_data = []
+    step_data = []
+    for i in range(17,len(roast_data_load)-3):
+        reda = roast_data_load[i].split(':')
+        #print(reda)
+        bt_temperature_data.append(float(reda[1])*1)
+        ror_bt.append(0 if (float(reda[2])*10*1) <= 0 else (float(reda[2])*10*1))
+        et_temperature_data.append(float(reda[3])*1)
+        ror_et.append(0 if (float(reda[4])*10*1) <= 0 else (float(reda[4])*10*1))  
+        entry_temperature_data.append(float(reda[5])*1)
+        time_data.append(float(reda[6])*1)
+        event_data.append(str(reda[7]))
+    step_data.append(float(roast_data_load[-3]))
+    step_data.append(float(roast_data_load[-2]))
+    step_data.append(float(roast_data_load[-1]))
+    #print(time_data)
+    wb = openpyxl.load_workbook('烘焙紀錄表.xlsx')
+    sheet = wb.active
+    sheet.cell(row=1,column=18).value = roast_data_load[10]   #'R1'操作人員
+    sheet.cell(row=2,column=2).value = roast_data_load[0]   #'B2'烘焙日期
+    sheet.cell(row=2,column=5).value = roast_data_load[11]   #'E2'天氣溫度
+    sheet.cell(row=2,column=7).value = '室外溫度1'   #'G2'
+    sheet.cell(row=2,column=9).value = '室內溫度1'   #'I2'
+    sheet.cell(row=2,column=11).value = '濕度1'   #'K2'
+    sheet.cell(row=2,column=12).value = '第    鍋'   #'L2'
+    sheet.cell(row=2,column=15).value = roast_data_load[3]   #'O2'生豆名稱
+    sheet.cell(row=3,column=2).value = roast_data_load[1]   #'B3'產區
+    sheet.cell(row=3,column=5).value = roast_data_load[2]   #'E3'處理法
+    sheet.cell(row=4,column=2).value = roast_data_load[6]   #'B4'生豆重量
+    sheet.cell(row=4,column=4).value = roast_data_load[4]   #'D4'生豆含水率
+    sheet.cell(row=5,column=2).value = roast_data_load[12]   #'B5'熟豆重量
+    sheet.cell(row=5,column=4).value = '熟豆含水率1'   #'D5'
+    sheet.cell(row=6,column=6).value = 'F6'   #'F6'
+    sheet.cell(row=7,column=4).value = roast_data_load[14]   #'D7'烘焙度外
+    sheet.cell(row=7,column=5).value = roast_data_load[15]   #'E7'烘焙度內
+    sheet.cell(row=7,column=6).value = 'F7'   #'F7'
+    sheet.cell(row=11,column=6).value = 'F11'   #'F11'
+    sheet.cell(row=12,column=2).value = roast_data_load[16]   #'B12'杯測風味
+
+    for k in range(len(time_data)):
+        tp_index_1 = int(k) // 60
+        tp_index_2 = int(k) % 60
+        #print (tp_index_1,tp_index_2,time_data[k],bt_temperature_data[k])
+        if (tp_index_2 == 59) :
+            sheet.cell(row=15,column=tp_index_1+2).value = bt_temperature_data[k]
+
+        if event_data[k] == 'CHARGE\n':
+            sheet.cell(row=8,column=2).value = bt_temperature_data[k]   #'B8'進豆溫度
+        elif event_data[k] == 'TP\n':
+            sheet.cell(row=8,column=4).value = bt_temperature_data[k]   #'D8'回溫點
+            time_min = time_data[k] // 60
+            time_sec = time_data[k] % 60
+            show_time = str(time_min) +':'+str(time_sec)+''
+            sheet.cell(row=8,column=6).value = show_time   #'F8'回溫時間        
+        elif event_data[k] == 'DRYe\n':
+            time_min = time_data[k] // 60
+            time_sec = time_data[k] % 60
+            show_time = str(time_min) +':'+str(time_sec)+''
+            sheet.cell(row=4,column=6).value = show_time   #'F4'轉黃點 150"C
+        elif event_data[k] == 'GDp\n':
+            time_min = time_data[k] // 60
+            time_sec = time_data[k] % 60
+            show_time = str(time_min) +':'+str(time_sec)+''
+            sheet.cell(row=5,column=6).value = show_time   #'F5'金黃點 170"C
+        elif event_data[k] == 'FCs\n':
+            sheet.cell(row=9,column=2).value = bt_temperature_data[k]   #'B9'一爆溫度
+            time_min = time_data[k] // 60
+            time_sec = time_data[k] % 60
+            show_time = str(time_min) +':'+str(time_sec)+''
+            sheet.cell(row=9,column=4).value = show_time   #'D9'一爆時間
+            sheet.cell(row=9,column=6).value = ''   #'F9'一爆送風
+        elif event_data[k] == 'SCs\n':
+            sheet.cell(row=10,column=2).value = bt_temperature_data[k]   #'B10'二爆溫度
+            time_min = time_data[k] // 60
+            time_sec = time_data[k] % 60
+            show_time = str(time_min) +':'+str(time_sec)+''
+            sheet.cell(row=10,column=4).value = show_time   #'D10'二爆時間
+            sheet.cell(row=10,column=6).value = ''   #'F10'二爆送風
+        elif event_data[k] == 'DROP\n':
+            sheet.cell(row=11,column=2).value = bt_temperature_data[k]   #'B11'下豆溫度
+            time_min = time_data[k] // 60
+            time_sec = time_data[k] % 60
+            show_time = str(time_min) +':'+str(time_sec)+''
+            sheet.cell(row=11,column=4).value = show_time   #'D11'下豆時間
+
+    sheet.cell(row=19,column=2).value = '備註1'   #'B19'
+    #print(sheet.cell(row=2,column=1).value)
+    wb.save(r_f + '.xlsx')#r_f
+    messagebox.showinfo('烘焙紀錄表', '烘焙紀錄表轉換完成 ' + r_f +'.xlsx')
     return
 
 if __name__ == '__main__' :#主程式及使用者介面設定
@@ -2296,8 +2406,10 @@ if __name__ == '__main__' :#主程式及使用者介面設定
 
     line = ttk.Separator(frame2, orient=VERTICAL, style="Line.TSeparator").grid(column=8, row=0, rowspan=14,padx=5,pady=5, sticky='ns')
 
-    btn_4 = Button(frame2,text='選擇檔案', style='W1.TButton',command=select_file)
-    btn_4.grid(row=0,column=10,padx=5,pady=5)
+    #btn_4 = Button(frame2,text='選擇檔案', style='W1.TButton',command=lambda:select_file())
+    btn_4 = Button(frame2,text='選擇檔案', style='W1.TButton',command=lambda:load_roast_data(3))
+
+    btn_4.grid(row=0,column=10,padx=5,pady=5)#load_roast_data(2)
 
     select_file_E = Entry(frame2,width=20,font="Keiu 14")
     select_file_E.grid(row=0,column=12,padx=5,pady=5)
@@ -2511,14 +2623,19 @@ if __name__ == '__main__' :#主程式及使用者介面設定
 
     #*****----- 全息烘焙 T0、T1、T2 設定溫度 -----*****
     all_rost_L = Label(frame3,width=10,text="全息烘焙", foreground='green',font="Keiu 16")#全息烘焙
-    all_rost_L.grid(row=23,column=5,columnspan=3,padx=5,pady=5)
+    all_rost_L.grid(row=23,column=5,columnspan=6,padx=5,pady=5)
 
-    all_rost_start_L = Label(frame3,width=5,text="min", foreground='blue',font="Keiu 16")#開始
-    all_rost_start_L.grid(row=25,column=6,padx=5,pady=5)
-    all_rost_end_L = Label(frame3,width=5,text="max", foreground='blue',font="Keiu 16")#結束
-    all_rost_end_L.grid(row=25,column=7,padx=5,pady=5)
+    all_rost_temps_L = Label(frame3,width=5,text="min", foreground='blue',font="Keiu 16")#開始
+    all_rost_temps_L.grid(row=25,column=6,padx=5,pady=5)
+    all_rost_tempe_L = Label(frame3,width=5,text="max", foreground='blue',font="Keiu 16")#結束
+    all_rost_tempe_L.grid(row=25,column=7,padx=5,pady=5)
 
-    tp_temp_L = Label(frame3,text="回溫點溫度",font="Keiu 16")#T0 點溫度
+    all_rost_times_L = Label(frame3,width=6,text="start_T", foreground='blue',font="Keiu 16")#開始
+    all_rost_times_L.grid(row=25,column=8,padx=5,pady=5)
+    all_rost_timee_L = Label(frame3,width=6,text="end_T", foreground='blue',font="Keiu 16")#結束
+    all_rost_timee_L.grid(row=25,column=9,padx=5,pady=5)
+
+    tp_temp_L = Label(frame3,text="回溫點溫度°C",font="Keiu 16")#T0 點溫度
     tp_temp_L.grid(row=27,column=5,padx=5,pady=5)
     tp_temp_E_min = Entry(frame3,width=5,font="Keiu 16")
     tp_temp_E_min.grid(row=27,column=6,padx=5,pady=5)
@@ -2527,7 +2644,14 @@ if __name__ == '__main__' :#主程式及使用者介面設定
     tp_temp_E_max.grid(row=27,column=7,padx=5,pady=5)
     tp_temp_E_max.insert(0,'90')
 
-    t0_temp_L = Label(frame3,text="T0 點溫度",font="Keiu 16")#T0 點溫度
+    tp_times_E = Entry(frame3,width=5,font="Keiu 16")
+    tp_times_E.grid(row=27,column=8,padx=5,pady=5)
+    tp_times_E.insert(0,'0:30')
+    tp_timee_E = Entry(frame3,width=5,font="Keiu 16")
+    tp_timee_E.grid(row=27,column=9,padx=5,pady=5)
+    tp_timee_E.insert(0,'1:30')
+
+    t0_temp_L = Label(frame3,text="T0 點溫度°C",font="Keiu 16")#T0 點溫度
     t0_temp_L.grid(row=29,column=5,padx=5,pady=5)
     t0_temp_E_min = Entry(frame3,width=5,font="Keiu 16")
     t0_temp_E_min.grid(row=29,column=6,padx=5,pady=5)
@@ -2536,7 +2660,14 @@ if __name__ == '__main__' :#主程式及使用者介面設定
     t0_temp_E_max.grid(row=29,column=7,padx=5,pady=5)
     t0_temp_E_max.insert(0,'100')
 
-    t1_temp_L = Label(frame3,text="T1 點溫度",font="Keiu 16")#T1 點溫度
+    t0_times_E = Entry(frame3,width=5,font="Keiu 16")
+    t0_times_E.grid(row=29,column=8,padx=5,pady=5)
+    t0_times_E.insert(0,'1:30')
+    t0_timee_E = Entry(frame3,width=5,font="Keiu 16")
+    t0_timee_E.grid(row=29,column=9,padx=5,pady=5)
+    t0_timee_E.insert(0,'2:00')    
+
+    t1_temp_L = Label(frame3,text="T1 點溫度°C",font="Keiu 16")#T1 點溫度
     t1_temp_L.grid(row=31,column=5,padx=5,pady=5)
     t1_temp_E_min = Entry(frame3,width=5,font="Keiu 16")
     t1_temp_E_min.grid(row=31,column=6,padx=5,pady=5)
@@ -2545,7 +2676,14 @@ if __name__ == '__main__' :#主程式及使用者介面設定
     t1_temp_E_max.grid(row=31,column=7,padx=5,pady=5)
     t1_temp_E_max.insert(0,'120')
 
-    t2_temp_L = Label(frame3,text="T2 點溫度",font="Keiu 16")#T2 點溫度
+    t1_times_E = Entry(frame3,width=5,font="Keiu 16")
+    t1_times_E.grid(row=31,column=8,padx=5,pady=5)
+    t1_times_E.insert(0,'2:30')
+    t1_timee_E = Entry(frame3,width=5,font="Keiu 16")
+    t1_timee_E.grid(row=31,column=9,padx=5,pady=5)
+    t1_timee_E.insert(0,'3:30')    
+
+    t2_temp_L = Label(frame3,text="T2 點溫度°C",font="Keiu 16")#T2 點溫度
     t2_temp_L.grid(row=33,column=5,padx=5,pady=5)
     t2_temp_E_min = Entry(frame3,width=5,font="Keiu 16")
     t2_temp_E_min.grid(row=33,column=6,padx=5,pady=5)
@@ -2553,6 +2691,13 @@ if __name__ == '__main__' :#主程式及使用者介面設定
     t2_temp_E_max = Entry(frame3,width=5,font="Keiu 16")
     t2_temp_E_max.grid(row=33,column=7,padx=5,pady=5)
     t2_temp_E_max.insert(0,'195')
+
+    t2_times_E = Entry(frame3,width=5,font="Keiu 16")
+    t2_times_E.grid(row=33,column=8,padx=5,pady=5)
+    t2_times_E.insert(0,'1:00')
+    t2_timee_E = Entry(frame3,width=5,font="Keiu 16")
+    t2_timee_E.grid(row=33,column=9,padx=5,pady=5)
+    t2_timee_E.insert(0,'2:30')    
 
     #*****----- 全息烘焙 T0、T1、T2 設定溫度 End -----*****
     Button(frame3,text="回BT & RoR", style='W.TButton',command=lambda:notebook.select(0)).grid(row=35,column=1,padx=5,pady=5)    
@@ -2572,7 +2717,7 @@ if __name__ == '__main__' :#主程式及使用者介面設定
     #********************* 資料記錄表格 ******************
     style_value = ttk.Style()
     style_value.configure("Treeview",background='lightgreen',foreground='blue',rowheight=30,font=("keui",14))#,foreground='blue'
-    tree = Treeview(frame5,column=("item","BT (C)","BT RoR","ET (C)","ET RoR","時間(分)","事件"), show = 'headings', height=30, selectmode='browse')#
+    tree = Treeview(frame5,column=("item","BT (°C)","BT RoR","ET (°C)","ET RoR","時間(分)","事件"), show = 'headings', height=30, selectmode='browse')#
     #'''
     yscrollbar =Scrollbar(tree)
     yscrollbar.config( orient="vertical",command=tree.yview)    
@@ -2581,9 +2726,9 @@ if __name__ == '__main__' :#主程式及使用者介面設定
     tree.configure(yscrollcommand=yscrollbar.set)
 
     tree.heading("#1",text='item')
-    tree.heading("#2",text='BT (C)')
+    tree.heading("#2",text='BT (°C)')
     tree.heading("#3",text='BT RoR')
-    tree.heading("#4",text='ET (C)')
+    tree.heading("#4",text='ET (°C)')
     tree.heading("#5",text='ET RoR')
     tree.heading("#6",text='時間(分)')
     tree.heading("#7",text='事件')
@@ -2602,7 +2747,8 @@ if __name__ == '__main__' :#主程式及使用者介面設定
     filename_L.grid(row=0,column=1,padx=5,pady=5)
     filename_E = Entry(frame5,width=20,font="Keiu 16")
     filename_E.grid(row=0,column=2,padx=5,pady=5)
-    filename_E.insert(0,str(datetime.date.today())+'-Test')#內定檔名
+    default_name = 'Akro-'+' '+'-'+str(datetime.date.today())+'-Test'
+    filename_E.insert(0,default_name)#內定檔名
 
     roastdate_L = Label(frame5,text="烘焙日期",font="Keiu 16")#烘焙日期
     roastdate_L.grid(row=1,column=1,padx=5,pady=5)
@@ -2621,11 +2767,11 @@ if __name__ == '__main__' :#主程式及使用者介面設定
     greenbean_inf_L.grid(row=3,column=0,columnspan=3,padx=5,pady=5)
     #********** 跳脫繪圖狀態的隱藏開關 End **********
 
-    gb_area_L = Label(frame5,text="生豆產地", foreground='green',font="Keiu 16")#生豆產地
-    gb_area_L.grid(row=4,column=1,padx=5,pady=5)
-    gb_area_E = Entry(frame5,width=20,font="Keiu 16")
-    gb_area_E.grid(row=4,column=2,padx=5,pady=5)
-    #gb_area_E.insert(0,'衣索比亞')#內定產地名稱 
+    gb_method_L = Label(frame5,text="生豆處理法", foreground='green',font="Keiu 16")#生豆處理法
+    gb_method_L.grid(row=4,column=1,padx=5,pady=5)
+    gb_method_E = Entry(frame5,width=20,font="Keiu 16")
+    gb_method_E.grid(row=4,column=2,padx=5,pady=5)
+    #gb_method_E.insert(0,'水洗')#內定生豆處理法 
        
     gb_name_L = Label(frame5,text="生豆名稱", foreground='green',font="Keiu 16")#生豆名稱
     gb_name_L.grid(row=5,column=1,padx=5,pady=5)
@@ -2684,9 +2830,43 @@ if __name__ == '__main__' :#主程式及使用者介面設定
     weather_E.grid(row=15,column=2,padx=5,pady=5)
     weather_E.insert(0,'晴天 32.5 °C')#內定天氣溫度
 
-    Button(frame5,text="選擇已存資料",style='W3.TButton', command=load_roast_data).grid(row=11,column=10,padx=10,pady=10)#,columnspan=17
+    #********** 熟豆資訊 **********
+    coffeebean_inf_L = Label(frame5,text="熟豆資訊", foreground='brown',font="Keiu 16")#熟豆資訊
+    coffeebean_inf_L.grid(row=3,column=20,columnspan=3,padx=5,pady=5)
+
+    cb_weight_L = Label(frame5,text="熟豆重量", foreground='brown',font="Keiu 16")#熟豆重量
+    cb_weight_L.grid(row=4,column=20,padx=5,pady=5)
+    cb_weight_E = Entry(frame5,width=20,font="Keiu 16")
+    cb_weight_E.grid(row=4,column=21,padx=5,pady=5)
+    #cb_area_E.insert(0,'485')#內定熟豆重量
+
+    loss_weight_L = Label(frame5,text="失重率", foreground='brown',font="Keiu 16")#失重率
+    loss_weight_L.grid(row=5,column=20,padx=5,pady=5)
+    loss_weight_E = Entry(frame5,width=20,font="Keiu 16")
+    loss_weight_E.grid(row=5,column=21,padx=5,pady=5)
+    #loss_weight_E.insert(0,'13.75%')#內定失重率
+
+    cb_barg_L = Label(frame5,text="豆色焙度", foreground='brown',font="Keiu 16")#豆色焙度
+    cb_barg_L.grid(row=6,column=20,padx=5,pady=5)
+    cb_barg_E = Entry(frame5,width=20,font="Keiu 16")
+    cb_barg_E.grid(row=6,column=21,padx=5,pady=5)
+    #cb_barg_E.insert(0,'75')#內定豆色焙度 
+
+    cb_parg_L = Label(frame5,text="粉色焙度", foreground='brown',font="Keiu 16")#粉色焙度
+    cb_parg_L.grid(row=7,column=20,padx=5,pady=5)
+    cb_parg_E = Entry(frame5,width=20,font="Keiu 16")
+    cb_parg_E.grid(row=7,column=21,padx=5,pady=5)
+    #cb_parg_E.insert(0,'88')#內定粉色焙度 
+
+    cb_cupping_L = Label(frame5,text="杯測風味", foreground='brown',font="Keiu 16")#杯測風味
+    cb_cupping_L.grid(row=8,column=20,padx=5,pady=5)
+    cb_cupping_E = Entry(frame5,width=20,font="Keiu 16")
+    cb_cupping_E.grid(row=8,column=21,padx=5,pady=5)
+    #gb_cupping_E.insert(0,'柑橘調性')#內定杯測風味 
+
+    Button(frame5,text="選擇已存資料",style='W3.TButton', command=lambda:load_roast_data(1)).grid(row=11,column=10,padx=10,pady=10)#,columnspan=17
     Button(frame5,text="讀Artisan檔案",style='W3.TButton', command=read_artisan).grid(row=11,column=12,padx=10,pady=10)
-    Button(frame5,text="通訊參數",state=DISABLED,style='W3.TButton', command=lambda:notebook.select(1)).grid(row=11,column=14,padx=10,pady=10)
+    Button(frame5,text="產生紀錄表",state='',style='W3.TButton', command=lambda:load_roast_data(2)).grid(row=11,column=14,padx=10,pady=10)
     Button(frame5,text="設備參數位址",state=DISABLED,style='W3.TButton', command=lambda:notebook.select(3)).grid(row=11,column=16,padx=10,pady=10)
     #*************** 第五個視窗-烘豆紀錄表 End ***************
 
@@ -2702,7 +2882,7 @@ if __name__ == '__main__' :#主程式及使用者介面設定
     fc_agtron_L.grid(row=15,column=1,padx=5,pady=5)
     fc_agtron_E = Entry(frame6)#,style='W.TButton'
     fc_agtron_E.grid(row=15,column=2)
-    fc_agtron_E.insert(0,'90')
+    fc_agtron_E.insert(0,'100')
 
     agtron_L = Label(frame6,text="豆表 Agtron 預估值",font="Keiu 16")#當下艾格狀數預估
     agtron_L.grid(row=15,column=4,padx=5,pady=5)
@@ -2730,3 +2910,65 @@ if __name__ == '__main__' :#主程式及使用者介面設定
     notebook.pack(padx=10,pady=10,fill=BOTH,expand=TRUE)
  
     root_t.mainloop()
+
+
+
+####----------    測試用程式碼    ----------####
+    '''
+    #將TreeView中的資料寫入檔案中
+    tree_item ='I001'
+    with open( filename +'.rxt','w') as f:
+        f.write(roastdate_E.get())  #烘焙日期
+        f.write('\n')
+        f.write(prodname_E.get())   #產品名稱
+        f.write('\n')
+        f.write(gb_area_E.get())   #生豆產地
+        f.write('\n')
+        f.write(gb_name_E.get())   #生豆名稱
+        f.write('\n')
+        f.write(gb_moisture_E.get())   #水分含量
+        f.write('\n')
+        f.write(gb_density_E.get())   #生豆密度
+        f.write('\n')
+        f.write(gb_weight_E.get())   #批次重量
+        f.write('\n')
+        f.write(machine_name_E.get())   #設備名稱
+        f.write('\n')
+        f.write(content_E.get())   #設備容量
+        f.write('\n')
+        f.write(energy_E.get())   #使用能源
+        f.write('\n')
+        f.write(operator_E.get())   #操作人員
+        f.write('\n')
+        f.write(weather_E.get())   #天氣溫度
+        f.write('\n')
+
+        while tree.exists(tree_item):#:next(tree.item)!= '',,tree.exists(tree_item)
+            i += 1
+            try:
+                td_1,td_2,td_3,td_4,td_5,td_6 = tree.item(tree_item,option='values')
+                #td_0:項次  td_1:豆溫  td_2:豆溫ROR  td_3:環境溫  td_4:環境溫ROR  td_5:烘豆時間  td_6:事件
+                td_0 = i
+                f.write(td_0+':'+td_1+':'+td_2+':'+td_3+':'+td_4+':'+td_5+':'+td_6+'\n')
+                #print(tree.item(tree_item,option='values')[0],tree.item(tree_item,option='values')[1])    
+                tree_item = tree.next(tree_item)
+            except:
+                print("存檔完成")
+                break
+    '''
+    '''
+    root_record = Tk()
+    screenwidth = root_record.winfo_screenwidth()
+    screenheight = root_record.winfo_screenheight()
+    w_win = 1480
+    h_win = 760
+    x_offset = (screenwidth - w_win) / 2
+    y_offset = ((screenheight - h_win) / 2)# - 30
+    root_record.title("轉成Excel烘焙紀錄表")
+    root_record.geometry("%dx%d+%d-%d" %(w_win,h_win,x_offset,y_offset))#1520
+    root_record.configure(bg='lightblue')
+    root_record.iconbitmap("coffee_logo.ico")
+
+    root_record.mainloop()
+    '''
+####----------    測試用程式碼End    ----------####
